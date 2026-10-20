@@ -11,6 +11,11 @@
       "code": "K1-AARY94",
       "rsvp": null
     },
+    "K1-AARONECA": {
+      "name": "Aaron",
+      "code": "K1-AARONECA",
+      "rsvp": null
+    },
     "K1-LEO31M": {
       "name": "Leo",
       "code": "K1-LEO31M",
@@ -36,6 +41,11 @@
       "code": "K1-ALEN29",
       "rsvp": null
     },
+    "K1-ALLEN671": {
+      "name": "Allen",
+      "code": "K1-ALLEN671",
+      "rsvp": null
+    },
     "K1-OSKA71": {
       "name": "Oskar",
       "code": "K1-OSKA71",
@@ -56,6 +66,11 @@
       "code": "K1-EVEN17",
       "rsvp": null
     },
+    "K1-EVANFA7": {
+      "name": "Evan",
+      "code": "K1-EVANFA7",
+      "rsvp": null
+    },
     "K1-PHIL64": {
       "name": "Philipp",
       "code": "K1-PHIL64",
@@ -64,7 +79,14 @@
     "K1-SARA52": {
       "name": "Sarah",
       "code": "K1-SARA52",
-      "rsvp": null
+      "rsvp": {
+        "status": "attending_all",
+        "parentName": "markus",
+        "parentPhone": "6505373007",
+        "dietary": "",
+        "notes": "",
+        "submittedAt": "2026-10-20T04:20:12.101Z"
+      }
     }
   }
 }

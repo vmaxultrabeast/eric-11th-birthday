@@ -1653,15 +1653,18 @@
     const VERIFIED_GUESTS = {
       "K1-TIM72X": "Tim",
       "K1-AARY94": "Aarys",
+      "K1-AARONECA": "Aaron",
       "K1-LEO31M": "Leo",
       "K1-LEON85": "Leonid",
       "K1-OMAR46": "Omar",
       "K1-AITO63": "Aitor",
       "K1-ALEN29": "Alen",
+      "K1-ALLEN671": "Allen",
       "K1-OSKA71": "Oskar",
       "K1-MALT58": "Malte",
       "K1-JUST83": "Justus",
       "K1-EVEN17": "Even",
+      "K1-EVANFA7": "Evan",
       "K1-PHIL64": "Philipp",
       "K1-SARA52": "Sarah"
     };
@@ -2044,6 +2047,7 @@
       } catch (e) {}
 
       const cloudRsvps = {};
+      const cloudGuests = {};
       try {
         const cloudRes = await fetch('https://ntfy.sh/eric-11th-birthday-k1-official/json?poll=1');
         if (cloudRes.ok) {
@@ -2057,6 +2061,8 @@
                 const parsed = JSON.parse(eventData.message);
                 if (parsed.code && parsed.status) {
                   cloudRsvps[parsed.code] = parsed;
+                } else if (parsed.type === 'new_guest' && parsed.code && parsed.name) {
+                  cloudGuests[parsed.code] = parsed.name;
                 }
               }
             } catch (e) {}
@@ -2085,26 +2091,29 @@
         });
       }
 
-      // Pull custom guests added via Host Hub (persists on GitHub Pages)
+      // Pull custom guests added via Host Hub (from cloud sync + localStorage)
+      const mergedCustom = { ...cloudGuests };
       try {
-        const custom = JSON.parse(localStorage.getItem('custom_guests') || '{}');
-        for (const [c, n] of Object.entries(custom)) {
-          if (!removedList.includes(c) && !staticList.some(g => g.code === c)) {
-            let savedRsvp = cloudRsvps[c] || null;
-            if (!savedRsvp) {
-              try {
-                const raw = localStorage.getItem('rsvp_' + c);
-                if (raw) savedRsvp = JSON.parse(raw);
-              } catch (e) {}
-            }
-            staticList.push({
-              code: c,
-              name: n,
-              rsvp: savedRsvp
-            });
-          }
-        }
+        const localCustom = JSON.parse(localStorage.getItem('custom_guests') || '{}');
+        Object.assign(mergedCustom, localCustom);
       } catch (e) {}
+
+      for (const [c, n] of Object.entries(mergedCustom)) {
+        if (!removedList.includes(c) && !staticList.some(g => g.code === c)) {
+          let savedRsvp = cloudRsvps[c] || null;
+          if (!savedRsvp) {
+            try {
+              const raw = localStorage.getItem('rsvp_' + c);
+              if (raw) savedRsvp = JSON.parse(raw);
+            } catch (e) {}
+          }
+          staticList.push({
+            code: c,
+            name: n,
+            rsvp: savedRsvp
+          });
+        }
+      }
 
       allGuests = staticList;
       renderAdminGuests(allGuests);
