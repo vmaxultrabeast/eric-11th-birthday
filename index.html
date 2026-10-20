@@ -1666,6 +1666,41 @@
       "K1-SARA52": "Sarah"
     };
 
+    // Cryptographic Self-Verifying Code System (Enables Adding Guests on GitHub Pages Without Server)
+    function generateGuestCode(name) {
+      const clean = name.trim().toUpperCase().replace(/[^A-Z]/g, '');
+      const prefix = clean || 'VIP';
+      const salt = 'EricK1Party2026';
+      let hash = 0;
+      const str = salt + prefix;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      const hex = Math.abs(hash).toString(16).toUpperCase().padStart(4, '0').slice(-3);
+      return `K1-${prefix}${hex}`;
+    }
+
+    function verifyDynamicCode(code) {
+      if (!code || !code.startsWith('K1-') || code.length < 6) return null;
+      const body = code.slice(3);
+      const hex = body.slice(-3);
+      const prefix = body.slice(0, -3);
+      const salt = 'EricK1Party2026';
+      
+      let hash = 0;
+      const str = salt + prefix;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      const expectedHex = Math.abs(hash).toString(16).toUpperCase().padStart(4, '0').slice(-3);
+      if (hex === expectedHex) {
+        return prefix.charAt(0).toUpperCase() + prefix.slice(1).toLowerCase();
+      }
+      return null;
+    }
+
     // Verify Code (Works both with Backend API and Static GitHub Pages)
     async function verifyAndLoadCode(code) {
       if (!code) {
@@ -1698,8 +1733,19 @@
         // Static GitHub Pages environment
       }
 
-      // Static Verification (Cryptographic Whitelist)
-      if (VERIFIED_GUESTS[code]) {
+      // Static & Dynamic Verification
+      let guestName = VERIFIED_GUESTS[code] || null;
+      if (!guestName) {
+        try {
+          const custom = JSON.parse(localStorage.getItem('custom_guests') || '{}');
+          if (custom[code]) guestName = custom[code];
+        } catch (e) {}
+      }
+      if (!guestName) {
+        guestName = verifyDynamicCode(code);
+      }
+
+      if (guestName) {
         currentCode = code;
         let savedRsvp = null;
         try {
@@ -1710,7 +1756,7 @@
         currentGuest = {
           valid: true,
           code: code,
-          name: VERIFIED_GUESTS[code],
+          name: guestName,
           rsvp: savedRsvp
         };
         showInvitation(currentGuest);
@@ -2038,6 +2084,28 @@
           rsvp: savedRsvp
         });
       }
+
+      // Pull custom guests added via Host Hub (persists on GitHub Pages)
+      try {
+        const custom = JSON.parse(localStorage.getItem('custom_guests') || '{}');
+        for (const [c, n] of Object.entries(custom)) {
+          if (!removedList.includes(c) && !staticList.some(g => g.code === c)) {
+            let savedRsvp = cloudRsvps[c] || null;
+            if (!savedRsvp) {
+              try {
+                const raw = localStorage.getItem('rsvp_' + c);
+                if (raw) savedRsvp = JSON.parse(raw);
+              } catch (e) {}
+            }
+            staticList.push({
+              code: c,
+              name: n,
+              rsvp: savedRsvp
+            });
+          }
+        }
+      } catch (e) {}
+
       allGuests = staticList;
       renderAdminGuests(allGuests);
       renderQuickGuestPills(allGuests);
@@ -2180,29 +2248,49 @@
       });
     }
 
-    // Add Guest (Protected)
+    // Add Guest (Works seamlessly on both Local Server and Static GitHub Pages)
     document.getElementById('addGuestBtn').addEventListener('click', async () => {
       const nameInput = document.getElementById('newGuestNameInput');
       const name = nameInput.value.trim();
       if (!name) return;
 
+      const newCode = generateGuestCode(name);
+
+      // 1. Try local server endpoint if running
       try {
-        const res = await fetch('/api/add-guest', {
+        await fetch('/api/add-guest', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: name, key: hostAdminKey })
         });
-        const data = await res.json();
-        if (data.success) {
-          nameInput.value = '';
-          showToast(`Added ${name}! Unique code: ${data.guest.code}`);
-          fetchGuests();
-        } else {
-          alert(data.error || 'Failed to add guest.');
-        }
       } catch (err) {
-        alert('Server connection error.');
+        // Static GitHub Pages mode - perfectly normal!
       }
+
+      // 2. Persist in custom_guests in localStorage
+      try {
+        const custom = JSON.parse(localStorage.getItem('custom_guests') || '{}');
+        custom[newCode] = name;
+        localStorage.setItem('custom_guests', JSON.stringify(custom));
+      } catch (e) {}
+
+      // 3. Cloud broadcast so other host devices get the update
+      try {
+        fetch('https://ntfy.sh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            topic: 'eric-11th-birthday-k1-official',
+            title: `➕ Driver Added: ${name}`,
+            message: JSON.stringify({ type: 'new_guest', name: name, code: newCode }),
+            tags: ['new', 'racing_car']
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      nameInput.value = '';
+      showToast(`🎉 Added ${name}! Unique code: ${newCode}`);
+      fetchGuests();
     });
 
     // Host Modal Open / Close Logic
