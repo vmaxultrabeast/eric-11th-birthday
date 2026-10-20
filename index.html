@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eric’s 11th Birthday • K1 Grand Prix & Sleepover</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏁</text></svg>">
+  
+  <!-- Apple-inspired typography: Inter / SF Pro style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: rgba(22, 22, 24, 0.75);
+      --card-solid: #161618;
+      --border: rgba(255, 255, 255, 0.12);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --k1-red: #e10600;
+      --k1-red-hover: #ff1812;
+      --k1-red-glow: rgba(225, 6, 0, 0.4);
+      --apple-blue: #2997ff;
+      --apple-gold: #f5a623;
+      --text: #f5f5f7;
+      --text-secondary: #86868b;
+      --text-tertiary: #6e6e73;
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 8px;
+      --radius-pill: 980px;
+      --font-body: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.47059;
+      letter-spacing: -0.022em;
+    }
+
+    /* Ambient Apple Lighting */
+    .ambient-glow {
+      position: fixed;
+      top: -15vw;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70vw;
+      height: 40vw;
+      background: radial-gradient(ellipse at center, rgba(225, 6, 0, 0.14) 0%, rgba(225, 6, 0, 0.03) 50%, transparent 75%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Apple-style Frosted Glass Navigation */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      max-width: 980px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fff;
+    }
+
+    .k1-badge {
+      background: var(--k1-red);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px var(--k1-red-glow);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-rsvp-btn {
+      background: var(--k1-red);
+      color: #fff !important;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: var(--radius-pill);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 14px rgba(225, 6, 0, 0.45);
+      transition: all 0.25s ease;
+      letter-spacing: -0.01em;
+    }
+    .nav-rsvp-btn:hover {
+      background: var(--k1-red-hover);
+      box-shadow: 0 4px 22px rgba(225, 6, 0, 0.7);
+      transform: translateY(-1px);
+    }
+
+    /* Hero CTA Row */
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .hero-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--k1-red);
+      color: #fff !important;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 30px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 6px 25px rgba(225, 6, 0, 0.5);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      letter-spacing: -0.01em;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-cta-btn:hover {
+      background: var(--k1-red-hover);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 10px 35px rgba(225, 6, 0, 0.75);
+    }
+    .hero-cta-btn::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: rotate(30deg);
+      animation: ctaSheen 4s infinite;
+    }
+    @keyframes ctaSheen {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      20% { transform: translateX(100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    .hero-secondary-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 14px 24px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .hero-secondary-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Floating Apple-Style Bottom RSVP Dock */
+    .floating-rsvp-dock {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 90;
+      background: rgba(20, 20, 24, 0.88);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(225, 6, 0, 0.2);
+      border-radius: var(--radius-pill);
+      padding: 8px 10px 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 90vw;
+    }
+    .floating-dock-text {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .floating-dock-text strong {
+      color: var(--k1-red);
+    }
+    @media (max-width: 520px) {
+      .floating-dock-text {
+        display: none;
+      }
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+    .pill-btn.primary {
+      background: var(--k1-red);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 12px rgba(225, 6, 0, 0.35);
+    }
+    .pill-btn.primary:hover {
+      background: var(--k1-red-hover);
+      box-shadow: 0 4px 20px rgba(225, 6, 0, 0.5);
+    }
+
+    /* Container */
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Apple-Style Hero */
+    .hero-section {
+      text-align: center;
+      padding: 36px 0 48px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--k1-red);
+      margin-bottom: 14px;
+    }
+
+    /* Personalized VIP Driver Tag */
+    .driver-vip-tag {
+      background: rgba(225, 6, 0, 0.12);
+      border: 1px solid rgba(225, 6, 0, 0.3);
+      padding: 6px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .driver-vip-tag span.driver-name {
+      color: #ff4d4d;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 7vw, 4.8rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin-bottom: 16px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #A1A1A6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 3vw, 1.65rem);
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin: 0 auto 32px;
+      line-height: 1.35;
+    }
+    .hero-subtitle strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Apple Hero Product Showcase Card (Eric's Kart Photo) */
+    .cinematic-card {
+      position: relative;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card-solid);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(225, 6, 0, 0.15);
+      margin-bottom: 48px;
+    }
+
+    .photo-wrapper {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0d0d0f;
+    }
+    @media (max-width: 768px) {
+      .photo-wrapper {
+        height: 380px;
+      }
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cinematic-card:hover .hero-img {
+      transform: scale(1.02);
+    }
+
+    /* Cinema Vignette & Info Overlay */
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 45%, rgba(0,0,0,0.92) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 32px;
+      pointer-events: none;
+    }
+
+    .photo-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .photo-badge {
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .photo-title {
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .photo-desc {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 4px;
+    }
+
+    /* Apple-Style Bento Grid (Telemetry & Specs) */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+
+    .bento-card {
+      background: var(--card-bg);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .bento-card:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    @media (max-width: 820px) {
+      .col-4, .col-6, .col-8 { grid-column: span 12; }
+    }
+
+    .bento-kicker {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .bento-headline {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    .bento-headline.gradient-red {
+      background: linear-gradient(135deg, #ff4d4d 0%, var(--k1-red) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bento-headline.gradient-gold {
+      background: linear-gradient(135deg, #ffd166 0%, var(--apple-gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bento-subtext {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* iOS Style Countdown Widget */
+    .countdown-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .time-tile {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 12px 6px;
+      text-align: center;
+    }
+    .time-tile .num {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .time-tile .lbl {
+      font-size: 0.65rem;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Apple-Style Section Headers */
+    .section-intro {
+      margin-bottom: 24px;
+    }
+    .section-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--k1-red);
+      margin-bottom: 6px;
+    }
+    .section-heading {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: #fff;
+    }
+
+    /* Apple Keynote Style Itinerary Flow */
+    .itinerary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 56px;
+    }
+
+    .itinerary-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 24px;
+      align-items: start;
+      transition: border-color 0.25s ease, background-color 0.25s ease;
+    }
+    @media (max-width: 680px) {
+      .itinerary-card {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 20px;
+      }
+    }
+    .itinerary-card:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(28, 28, 30, 0.8);
+    }
+    .itinerary-card.highlight {
+      border-color: rgba(225, 6, 0, 0.4);
+      background: linear-gradient(135deg, rgba(225, 6, 0, 0.08) 0%, rgba(22, 22, 24, 0.75) 100%);
+    }
+
+    .itin-time {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .itin-time .hour {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    .itin-time .day-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--k1-red);
+    }
+
+    .itin-body h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      letter-spacing: -0.015em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .itin-body p {
+      color: var(--text-secondary);
+      font-size: 0.93rem;
+      line-height: 1.5;
+    }
+
+    /* Locations & Maps (Apple Maps Style) */
+    .maps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+    @media (max-width: 720px) {
+      .maps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .map-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .map-card .badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--apple-blue);
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .map-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .map-card .address {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.45;
+    }
+    .map-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Waiver & Gear Checklist */
+    .gear-card {
+      background: linear-gradient(135deg, rgba(225, 6, 0, 0.08) 0%, rgba(245, 166, 35, 0.04) 100%);
+      border: 1px solid rgba(225, 6, 0, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 56px;
+    }
+    .gear-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .gear-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .gear-item {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      font-size: 0.88rem;
+    }
+    .gear-item strong {
+      display: block;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .gear-item span {
+      color: var(--text-secondary);
+    }
+
+    /* Apple-Style RSVP Form */
+    .rsvp-section {
+      background: var(--card-bg);
+      border: 2px solid rgba(225, 6, 0, 0.45);
+      border-radius: var(--radius-xl);
+      padding: 40px 32px;
+      margin-bottom: 56px;
+      position: relative;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 35px rgba(225, 6, 0, 0.2);
+    }
+
+    .rsvp-form-group {
+      margin-bottom: 22px;
+    }
+    .rsvp-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .apple-input, .apple-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+    .apple-input:focus, .apple-textarea:focus {
+      outline: none;
+      border-color: var(--k1-red);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 4px rgba(225, 6, 0, 0.2);
+    }
+    .apple-input:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+
+    /* Segmented Option Cards */
+    .segmented-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 640px) {
+      .segmented-options {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .segment-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+    .segment-card:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .segment-card.selected {
+      border-color: var(--k1-red);
+      background: rgba(225, 6, 0, 0.1);
+      box-shadow: 0 0 16px rgba(225, 6, 0, 0.25);
+    }
+    .segment-card input[type="radio"] {
+      margin-top: 3px;
+      accent-color: var(--k1-red);
+      width: 18px;
+      height: 18px;
+    }
+    .segment-title {
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+    .segment-sub {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .apple-submit-btn {
+      width: 100%;
+      background: var(--k1-red);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      padding: 16px 28px;
+      border-radius: var(--radius-pill);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(225, 6, 0, 0.4);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .apple-submit-btn:hover {
+      background: var(--k1-red-hover);
+      box-shadow: 0 8px 30px rgba(225, 6, 0, 0.6);
+      transform: translateY(-1px);
+    }
+    .apple-submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Confirmed Banner */
+    .confirmed-banner {
+      background: rgba(46, 196, 182, 0.12);
+      border: 1px solid rgba(46, 196, 182, 0.4);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* Access Gate (Protected / No Code / Invalid Code) */
+    .access-gate-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 56px 32px;
+      text-align: center;
+      max-width: 540px;
+      margin: 60px auto;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    }
+    .gate-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+    .gate-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .gate-desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .gate-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .gate-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    /* Admin Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-sheet {
+      background: #141416;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      max-width: 820px;
+      width: 100%;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.85);
+    }
+    .modal-head {
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-content {
+      padding: 28px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .close-x {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-x:hover { color: #fff; }
+
+    /* Admin Table */
+    .guest-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 0.86rem;
+    }
+    .guest-table th, .guest-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .guest-table th {
+      color: var(--text-tertiary);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+    }
+    .tag-status {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tag-attending { background: rgba(46, 196, 182, 0.15); color: #2ec4b6; border: 1px solid rgba(46, 196, 182, 0.3); }
+    .tag-declined { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .tag-pending { background: rgba(245, 166, 35, 0.15); color: #f5a623; border: 1px solid rgba(245, 166, 35, 0.3); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(28, 28, 30, 0.95);
+      backdrop-filter: blur(20px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 12px 24px;
+      border-radius: var(--radius-pill);
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 300;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-tertiary);
+      font-size: 0.85rem;
+      padding: 40px 0;
+      border-top: 1px solid var(--border-subtle);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light -->
+  <div class="ambient-glow"></div>
+
+  <!-- Apple-Style Frosted Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-brand" id="brandLogo" style="cursor: default;" title="Eric’s 11th Birthday">
+        <span class="k1-badge" id="k1BadgeTrigger" style="cursor: pointer;" title="K1 Speed">K1</span>
+        <span>Eric’s 11th Birthday • Fri Nov 20 – Sat Nov 21</span>
+      </div>
+      <div class="nav-actions">
+        <a href="#rsvpSection" class="nav-rsvp-btn" id="navRsvpLink">
+          <span>🏁</span> RSVP Now
+        </a>
+        <!-- Host Hub Button: HIDDEN from all guests by default. Only revealed for parents via ?admin=true or secret PIN -->
+        <button class="pill-btn hidden" id="openHostBtn">
+          <span>⚙️</span> Host Hub
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    
+    <!-- MAIN INVITATION VIEW (Unlocked with valid personal code) -->
+    <div id="invitationView" class="hidden">
+      
+      <!-- Hero Section -->
+      <header class="hero-section">
+        <div class="eyebrow" style="background: rgba(225, 6, 0, 0.1); border: 1px solid rgba(225, 6, 0, 0.3); padding: 6px 18px; border-radius: var(--radius-pill); font-size: 0.8rem;">
+          <span>🗓️</span> 2-Day Celebration • Friday Nov 20 (2:45 PM) → Saturday Nov 21 (9:00 AM)
+        </div>
+
+        <div class="driver-vip-tag">
+          <span>🏎️ VIP DRIVER PASS:</span>
+          <span id="guestNameDisplay" class="driver-name">Loading...</span>
+        </div>
+
+        <h1 class="hero-title" style="margin-bottom: 8px;">Eric is Turning 11.</h1>
+        <div style="font-family: 'Space Grotesk', -apple-system, sans-serif; font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 700; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.02em;">
+          🏎️ K1 Grand Prix <span style="color:var(--k1-red);">+</span> 🎬 Movie Night <span style="color:var(--apple-gold);">+</span> ⛺ Sleepover
+        </div>
+        <p class="hero-subtitle">
+          Hey <strong id="guestGreetingName" style="color:#fff;">there</strong>! You’re officially invited to a full 2-day birthday celebration starting <strong>Friday right after school (2:45 PM)</strong> with <strong>K1 Speed Electric Go-Kart Racing</strong> in Santa Clara, followed by a victory pizza party, <strong>movie theater night</strong>, and an epic <strong>overnight sleepover</strong> at Eric’s home in Los Altos. Pickup is <strong>Saturday morning at 9:00 AM (Nov 21)</strong>.
+        </p>
+
+        <!-- Prominent Hero Call-to-Action Buttons -->
+        <div class="hero-cta-row">
+          <a href="#rsvpSection" class="hero-cta-btn" id="heroRsvpCtaBtn">
+            <span>🏁</span> RSVP for <span id="heroRsvpNameSpan">Your Child</span>
+          </a>
+          <a href="#itinerarySection" class="hero-secondary-btn">
+            <span>📋</span> View Schedule
+          </a>
+        </div>
+
+        <!-- Apple Hero Showcase Card: Eric in Kart #53 at K1 Speed -->
+        <div class="cinematic-card">
+          <div class="photo-wrapper">
+            <img src="eric-k1-kart.jpg" alt="Eric in K1 Speed Kart #53" class="hero-img">
+            <div class="photo-overlay">
+              <div class="photo-badge-row">
+                <span class="photo-badge" style="background: rgba(225, 6, 0, 0.8); border-color: transparent;">
+                  ⚡ Kart #53
+                </span>
+                <span class="photo-badge">
+                  📍 K1 Speed Santa Clara
+                </span>
+                <span class="photo-badge">
+                  🎂 Eric’s 11th Birthday
+                </span>
+              </div>
+              <h2 class="photo-title">Ready for Green Flag.</h2>
+              <p class="photo-desc">Wheel-to-wheel electric thrills, live telemetry lap times, and the ultimate overnight victory bash.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bento Grid: Fast Specs & 3 Celebration Pillars -->
+        <div class="bento-grid">
+          
+          <!-- Pillar 1: K1 Racing -->
+          <div class="bento-card col-4">
+            <div>
+              <div class="bento-kicker" style="color:var(--k1-red);">Part 1 • K1 Grand Prix</div>
+              <div class="bento-headline gradient-red">12 + 12 Laps</div>
+              <p class="bento-subtext">Pickup at school 2:45 PM. 4:00 PM arrival at K1 Santa Clara, 4:30 PM race start (12-lap qualifier + 12-lap final + 1-hr VIP seating).</p>
+            </div>
+          </div>
+
+          <!-- Pillar 2: Movie Night -->
+          <div class="bento-card col-4">
+            <div>
+              <div class="bento-kicker" style="color:var(--apple-blue);">Part 2 • Los Altos Home</div>
+              <div class="bento-headline" style="color:#fff;">🎬 Movie Night</div>
+              <p class="bento-subtext">Living room cinema with hot pizza, birthday cake, giant buttered popcorn bar, treats, and favorite movies.</p>
+            </div>
+          </div>
+
+          <!-- Pillar 3: Sleepover & Pickup -->
+          <div class="bento-card col-4">
+            <div>
+              <div class="bento-kicker" style="color:var(--apple-gold);">Part 3 • Overnight Bash</div>
+              <div class="bento-headline gradient-gold">⛺ Sleepover</div>
+              <p class="bento-subtext">Sleeping bag campout + Saturday pancake breakfast. <strong>Parent pickup Saturday, Nov 21 @ 9:00 AM</strong> (1972 Annette Ln, Los Altos).</p>
+            </div>
+          </div>
+
+          <!-- Card 4: Date & Timeline Header Banner -->
+          <div class="bento-card col-12" style="background: linear-gradient(180deg, rgba(22,22,24,0.9) 0%, rgba(15,15,18,0.95) 100%); border-color: rgba(245, 166, 35, 0.3);">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
+              <div>
+                <div class="bento-kicker" style="color: var(--apple-gold);">🗓️ Complete Event Window</div>
+                <div style="font-size: 1.4rem; font-weight: 800; color: #fff;">
+                  Friday, Nov 20 (2:45 PM) <span style="color:var(--text-tertiary);">→</span> Saturday, Nov 21 (9:00 AM)
+                </div>
+                <div style="font-size: 0.88rem; color: var(--text-secondary); margin-top: 4px;">
+                  Pickup location: <strong>1972 Annette Lane, Los Altos, CA 94024</strong>
+                </div>
+              </div>
+              <div class="countdown-box" style="margin-top: 0; min-width: 320px;">
+                <div class="time-tile">
+                  <div class="num" id="cdDays">00</div>
+                  <div class="lbl">Days</div>
+                </div>
+                <div class="time-tile">
+                  <div class="num" id="cdHours">00</div>
+                  <div class="lbl">Hours</div>
+                </div>
+                <div class="time-tile">
+                  <div class="num" id="cdMins">00</div>
+                  <div class="lbl">Mins</div>
+                </div>
+                <div class="time-tile">
+                  <div class="num" id="cdSecs">00</div>
+                  <div class="lbl">Secs</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- Keynote Flow: Chronological Itinerary -->
+      <section id="itinerarySection" style="margin-bottom: 56px;">
+        <div class="section-intro">
+          <div class="section-eyebrow">The Race Weekend</div>
+          <h2 class="section-heading">Itinerary & Schedule.</h2>
+        </div>
+
+        <div class="itinerary-list">
+          
+          <div class="itinerary-card">
+            <div class="itin-time">
+              <span class="day-badge">Friday • Nov 20</span>
+              <span class="hour">2:45 PM</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>🎒</span> Pit Lane Pickup (School Dismissal)</h3>
+              <p>We pick up the kids right as school dismisses at 2:45 PM in the party convoy. Racers should bring their sleepover bags to school in the morning!</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card">
+            <div class="itin-time">
+              <span class="day-badge" style="color:var(--apple-blue);">K1 Speed Arena</span>
+              <span class="hour">4:00 PM</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>📝</span> 30-Min Early Arrival & Registration</h3>
+              <p>Mandatory early arrival at K1 Speed Santa Clara for driver check-in, waiver verification, head socks, helmet fitting, and safety briefing.</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card highlight">
+            <div class="itin-time">
+              <span class="day-badge" style="color:var(--k1-red);">Green Flag</span>
+              <span class="hour">4:30 – 5:30 PM</span>
+            </div>
+            <div class="itin-body">
+              <h3 style="color:#fff;"><span>🏎️</span> Indoor Electric Go-Kart Races</h3>
+              <p><strong>12-Lap Qualifier Race:</strong> Clock your fastest lap to secure pole position on the starting grid.<br>
+              <strong>12-Lap Final Event Race:</strong> Wheel-to-wheel race for the championship title, podium finish, and awards!</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card">
+            <div class="itin-time">
+              <span class="day-badge" style="color:var(--apple-gold);">K1 VIP Lounge</span>
+              <span class="hour">5:30 – 6:30 PM</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>🏆</span> 1-Hour Reserved Seating Post Race</h3>
+              <p>Exclusive trackside reserved table seating at K1. Trophy presentation, racer hydration, arcade fun, and celebrating the champion drivers!</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card">
+            <div class="itin-time">
+              <span class="day-badge">Eric’s Home</span>
+              <span class="hour">6:45 – 8:00 PM</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>🍕</span> Los Altos Pit Stop & Pizza Feast</h3>
+              <p>Convoy to Eric’s home in Los Altos (1972 Annette Lane). Fresh piping-hot pizza, snacks, birthday cake, outdoor games, and video game tournaments.</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card">
+            <div class="itin-time">
+              <span class="day-badge">Cinema Lounge</span>
+              <span class="hour">8:00 – 10:30 PM</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>🎬</span> Living Room Cinema & Popcorn</h3>
+              <p>Big screen movie night with warm buttered popcorn, sweet treats, and late-night drinks.</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card">
+            <div class="itin-time">
+              <span class="day-badge">Night Camp</span>
+              <span class="hour">10:30 PM+</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>⛺</span> The Grand Prix Sleepover</h3>
+              <p>Living room campout with sleeping bags, laughs, and recharging batteries for tomorrow.</p>
+            </div>
+          </div>
+
+          <div class="itinerary-card" style="border-left: 3px solid var(--apple-gold);">
+            <div class="itin-time">
+              <span class="day-badge" style="color:var(--apple-gold);">Saturday • Nov 21</span>
+              <span class="hour">9:00 AM</span>
+            </div>
+            <div class="itin-body">
+              <h3><span>🥞</span> Breakfast & Parent Pickup</h3>
+              <p>Champion’s pancake breakfast in the morning. Parents pick up kids promptly at <strong>9:00 AM on Saturday, November 21st</strong> from <strong>1972 Annette Lane, Los Altos</strong>.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Apple-Style Feature Section: Movie Night & Sleepover Spotlight -->
+      <section style="margin-bottom: 56px;">
+        <div class="section-intro">
+          <div class="section-eyebrow" style="color:var(--apple-gold);">Evening & Overnight Celebration</div>
+          <h2 class="section-heading">Movie Night & The Sleepover.</h2>
+          <p style="color: var(--text-secondary); margin-top: 6px;">
+            The adrenaline continues after the track! From Friday evening through Saturday morning at Eric's home in Los Altos.
+          </p>
+        </div>
+
+        <div class="maps-grid" style="margin-bottom: 0;">
+          
+          <!-- Movie Night Feature -->
+          <div class="bento-card" style="padding: 30px; border-color: rgba(41, 151, 255, 0.3); background: linear-gradient(145deg, rgba(41, 151, 255, 0.08) 0%, rgba(22, 22, 24, 0.8) 100%);">
+            <div style="font-size: 2.2rem; margin-bottom: 12px;">🎬</div>
+            <div class="bento-kicker" style="color: var(--apple-blue);">Friday 8:00 PM – 10:30 PM</div>
+            <h3 style="font-size: 1.45rem; font-weight: 800; color: #fff; margin-bottom: 8px;">Living Room Cinema</h3>
+            <p style="color: var(--text-secondary); font-size: 0.93rem; line-height: 1.5; margin-bottom: 16px;">
+              After hot pizza and birthday cake, we dim the lights for movie night on the big screen! Fresh warm buttered popcorn, candy bar, soda, and relaxing on comfy lounge pillows.
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <span class="photo-badge" style="font-size: 0.72rem;">🍿 Popcorn Bar</span>
+              <span class="photo-badge" style="font-size: 0.72rem;">🍬 Movie Candy</span>
+              <span class="photo-badge" style="font-size: 0.72rem;">🎮 Party Games</span>
+            </div>
+          </div>
+
+          <!-- Sleepover & Morning Pickup Feature -->
+          <div class="bento-card" style="padding: 30px; border-color: rgba(245, 166, 35, 0.35); background: linear-gradient(145deg, rgba(245, 166, 35, 0.08) 0%, rgba(22, 22, 24, 0.8) 100%);">
+            <div style="font-size: 2.2rem; margin-bottom: 12px;">⛺</div>
+            <div class="bento-kicker" style="color: var(--apple-gold);">Overnight → Saturday 9:00 AM</div>
+            <h3 style="font-size: 1.45rem; font-weight: 800; color: #fff; margin-bottom: 8px;">The Living Room Campout</h3>
+            <p style="color: var(--text-secondary); font-size: 0.93rem; line-height: 1.5; margin-bottom: 16px;">
+              Racers unroll sleeping bags for a classic campout sleepover. Saturday morning starts with a champion’s pancake breakfast before parent pickup.
+            </p>
+            <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(245, 166, 35, 0.3); border-radius: var(--radius-md); padding: 12px 14px; margin-top: auto;">
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--apple-gold); text-transform: uppercase; letter-spacing: 0.5px;">🚗 Pickup Notice for Parents</div>
+              <div style="font-size: 0.92rem; font-weight: 700; color: #fff; margin-top: 2px;">
+                Saturday, Nov 21 promptly at 9:00 AM
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">
+                1972 Annette Lane, Los Altos, CA 94024
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Apple Maps Cards -->
+      <section style="margin-bottom: 56px;">
+        <div class="section-intro">
+          <div class="section-eyebrow">Waypoints</div>
+          <h2 class="section-heading">Locations & Navigation.</h2>
+        </div>
+
+        <div class="maps-grid">
+          
+          <div class="map-card">
+            <div>
+              <div class="badge">Track Venue</div>
+              <h3>K1 Speed Santa Clara</h3>
+              <p class="address">
+                2925 Mead Ave<br>
+                Santa Clara, CA 95051
+              </p>
+            </div>
+            <div class="map-actions">
+              <a href="https://maps.google.com/?q=K1+Speed+Santa+Clara+2925+Mead+Ave" target="_blank" rel="noopener" class="pill-btn primary" style="flex:1;justify-content:center;">
+                <span>🗺️</span> Open in Maps
+              </a>
+              <a href="https://www.k1speed.com/booking-thank-you.html" target="_blank" rel="noopener" class="pill-btn" style="border-color:rgba(225,6,0,0.5);color:#ff6b6b;">
+                <span>📝</span> Sign Waiver
+              </a>
+              <button onclick="copyToClipboard('2925 Mead Ave, Santa Clara, CA 95051')" class="pill-btn">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+
+          <div class="map-card">
+            <div>
+              <div class="badge" style="color:var(--apple-gold);">Party & 9 AM Pickup Spot</div>
+              <h3>Eric’s Home (Pickup 9 AM Nov 21)</h3>
+              <p class="address">
+                1972 Annette Lane<br>
+                Los Altos, CA 94024
+              </p>
+            </div>
+            <div class="map-actions">
+              <a href="https://maps.google.com/?q=1972+Annette+Lane+Los+Altos+CA" target="_blank" rel="noopener" class="pill-btn primary" style="flex:1;justify-content:center;">
+                <span>🗺️</span> Open in Maps
+              </a>
+              <button onclick="copyToClipboard('1972 Annette Lane, Los Altos, CA 94024')" class="pill-btn">
+                <span>📋</span> Copy
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Checklist for Parents -->
+      <section class="gear-card">
+        <h3 class="gear-title">
+          <span>🎒</span> Driver Packing Checklist for Parents
+        </h3>
+        <div class="gear-grid">
+          <div class="gear-item">
+            <strong>👟 Closed-Toe Shoes</strong>
+            <span>Mandatory K1 Speed rule. Strictly no sandals or Crocs on the track.</span>
+          </div>
+          <div class="gear-item" style="border-color: rgba(225, 6, 0, 0.4); background: rgba(225, 6, 0, 0.08);">
+            <strong>📝 K1 Online Waiver (Mandatory)</strong>
+            <span>Must be signed online by a parent/guardian prior to racing.</span>
+            <div style="margin-top: 8px;">
+              <a href="https://www.k1speed.com/booking-thank-you.html" target="_blank" rel="noopener" class="pill-btn primary" style="font-size: 0.75rem; padding: 4px 12px; display: inline-flex;">
+                <span>✍️</span> Sign Online Waiver Now ↗
+              </a>
+            </div>
+          </div>
+          <div class="gear-item">
+            <strong>🛏️ Sleepover Gear</strong>
+            <span>Sleeping bag, comfortable pillow, and warm pajamas.</span>
+          </div>
+          <div class="gear-item">
+            <strong>🪥 Morning Kit</strong>
+            <span>Toothbrush and fresh clothes for Saturday morning pickup.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Apple-Style RSVP Form -->
+      <section class="rsvp-section" id="rsvpSection">
+        <div class="section-intro" style="margin-bottom: 20px;">
+          <div class="section-eyebrow">Confirmation</div>
+          <h2 class="section-heading">RSVP for <span id="rsvpForName">Your Child</span>.</h2>
+          <p style="color: var(--text-secondary); margin-top: 6px;">
+            Please confirm your attendance so Eric’s family can register racer slots at K1 Speed and arrange transportation.
+          </p>
+        </div>
+
+        <div id="rsvpConfirmedBanner" class="confirmed-banner hidden">
+          <div style="font-size: 1.5rem;">✅</div>
+          <div>
+            <div style="font-weight: 700; color: #fff;">RSVP Confirmed</div>
+            <div style="font-size: 0.85rem; color: #a7f3d0;" id="rsvpSummaryText">Thank you! Your spot on the grid is locked.</div>
+          </div>
+        </div>
+
+        <form id="rsvpForm">
+          <div class="rsvp-form-group">
+            <label class="rsvp-label">Driver / Guest Name</label>
+            <input type="text" id="rsvpGuestName" class="apple-input" disabled>
+          </div>
+
+          <div class="rsvp-form-group">
+            <label class="rsvp-label">Attendance Option</label>
+            <div class="segmented-options">
+              
+              <label class="segment-card" id="seg1">
+                <input type="radio" name="attendanceStatus" value="attending_all" checked>
+                <div>
+                  <div class="segment-title">🏎️ Full 2-Day Bash: K1 Racing + Movie Night + Sleepover</div>
+                  <div class="segment-sub">Friday 2:45 PM pickup → K1 Racing → Pizza → Movie Night → Sleepover → <strong>Saturday 9:00 AM parent pickup</strong></div>
+                </div>
+              </label>
+
+              <label class="segment-card" id="seg2">
+                <input type="radio" name="attendanceStatus" value="attending_no_sleepover">
+                <div>
+                  <div class="segment-title">🏎️ Racing + Pizza & Movie Only (No Sleepover)</div>
+                  <div class="segment-sub">Joining for racing, pizza & movie; parent pickup Friday night Nov 20 at 9:30 PM</div>
+                </div>
+              </label>
+
+              <label class="segment-card" id="seg3" style="grid-column: 1 / -1;">
+                <input type="radio" name="attendanceStatus" value="declined">
+                <div>
+                  <div class="segment-title">🏁 Unable to Attend</div>
+                  <div class="segment-sub">Cheering from the sidelines with regrets</div>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <div class="rsvp-form-group">
+            <label class="rsvp-label" for="parentNameInput">Parent / Guardian Name</label>
+            <input type="text" id="parentNameInput" class="apple-input" placeholder="e.g. Sarah Johnson" required>
+          </div>
+
+          <div class="rsvp-form-group">
+            <label class="rsvp-label" for="parentPhoneInput">Parent Mobile Phone (For updates & emergency)</label>
+            <input type="tel" id="parentPhoneInput" class="apple-input" placeholder="e.g. (408) 555-0142" required>
+          </div>
+
+          <div class="rsvp-form-group">
+            <label class="rsvp-label" for="dietaryInput">Dietary Preferences or Allergies</label>
+            <input type="text" id="dietaryInput" class="apple-input" placeholder="e.g. Nut allergy, vegetarian, gluten-free, or None">
+          </div>
+
+          <div class="rsvp-form-group">
+            <label class="rsvp-label" for="notesInput">Message for Eric / Favorite Movie or Song</label>
+            <textarea id="notesInput" class="apple-textarea" rows="2" placeholder="Leave a birthday wish or song suggestion!"></textarea>
+          </div>
+
+          <!-- K1 Waiver Reminder Box -->
+          <div style="background: rgba(225, 6, 0, 0.08); border: 1px solid rgba(225, 6, 0, 0.35); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 22px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.4rem;">📝</span>
+              <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.9rem;">Parent Waiver Required for K1 Racing</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary);">K1 Speed requires an online parent/guardian release before kids can drive.</div>
+              </div>
+            </div>
+            <a href="https://www.k1speed.com/booking-thank-you.html" target="_blank" rel="noopener" class="pill-btn primary" style="font-size: 0.82rem; padding: 6px 14px;">
+              <span>✍️</span> Complete Waiver ↗
+            </a>
+          </div>
+
+          <button type="submit" class="apple-submit-btn" id="submitRsvpBtn">
+            <span>🏁</span> Confirm RSVP
+          </button>
+        </form>
+      </section>
+
+      <!-- Calendar Button -->
+      <div style="text-align: center; margin-bottom: 40px;">
+        <button class="pill-btn" id="calendarBtn" style="padding: 10px 22px; font-size: 0.9rem;">
+          <span>📅</span> Add to Apple / Google Calendar
+        </button>
+      </div>
+
+      <!-- Floating Bottom RSVP Bar (Visible as user scrolls) -->
+      <div class="floating-rsvp-dock" id="floatingRsvpDock">
+        <span class="floating-dock-text">
+          🗓️ <strong>Fri Nov 20 (2:45 PM) → Sat Nov 21 (9 AM)</strong> • Ready, <span id="dockGuestName">Friend</span>?
+        </span>
+        <a href="#rsvpSection" class="nav-rsvp-btn" style="padding: 10px 20px; font-size: 0.88rem; box-shadow: 0 4px 18px rgba(225, 6, 0, 0.6);">
+          <span>✍️</span> RSVP Now
+        </a>
+      </div>
+
+    </div>
+
+    <!-- ACCESS GATE: Displayed when no code or invalid code is present -->
+    <div id="accessGate" class="access-gate-card">
+      <div class="gate-icon" id="gateIcon">🔒</div>
+      <h2 class="gate-title" id="gateTitle">Private VIP Pass Required</h2>
+      <p class="gate-desc" id="gateDescription">
+        This is a private invitation for Eric’s 11th Birthday Grand Prix. Please open your personal invitation link or enter your pass code below.
+      </p>
+
+      <div id="gateErrorBox" class="gate-error hidden">
+        <strong>⚠️ Access Denied:</strong> This invitation code was not found. Guest passcodes are strictly registered by Eric's family so arbitrary codes cannot be used.
+      </div>
+
+      <div class="gate-row">
+        <input type="text" id="manualCodeInput" class="apple-input" placeholder="Enter Code (e.g. K1-ALEX89)" style="text-transform: uppercase;">
+        <button id="submitManualCodeBtn" class="pill-btn primary" style="padding: 0 20px;">
+          Unlock
+        </button>
+      </div>
+
+      <!-- Demonstration quick switcher: HIDDEN from all guests. Only shown if ?demo=true or ?admin=true -->
+      <div id="demoGuestPicker" class="hidden" style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-subtle); font-size: 0.82rem; color: var(--text-tertiary);">
+        <p style="margin-bottom: 10px;">Select a sample invited friend to view their pass:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;" id="quickGuestButtons">
+          <!-- Populated by JS only if in admin/demo mode -->
+        </div>
+      </div>
+    </div>
+
+    <!-- HOST / ORGANIZER MODAL -->
+    <div id="organizerModal" class="modal-backdrop hidden">
+      <div class="modal-sheet">
+        <div class="modal-head">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="k1-badge">K1</span>
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;">Host & Guest Management Hub</h3>
+              <p style="font-size: 0.75rem; color: var(--text-tertiary);">Share personalized links & track RSVPs in real time</p>
+            </div>
+          </div>
+          <button class="close-x" id="closeHostBtn">&times;</button>
+        </div>
+
+        <div class="modal-content">
+          <!-- Add Guest Form -->
+          <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; color: var(--k1-red);">
+              ➕ Add Invited Friend (Generates Cryptographic Safe Code)
+            </h4>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="newGuestNameInput" class="apple-input" placeholder="Friend’s Name (e.g. Leo)">
+              <button class="pill-btn primary" id="addGuestBtn" style="padding: 0 20px;">
+                Add Friend
+              </button>
+            </div>
+          </div>
+
+          <!-- Guest List & Live Links -->
+          <h4 style="font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <span>📋 Invited Racers (<span id="guestCountDisplay">0</span>)</span>
+            <span style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: normal;">No one can guess or fabricate codes</span>
+          </h4>
+
+          <div style="overflow-x: auto;">
+            <table class="guest-table">
+              <thead>
+                <tr>
+                  <th>Racer Name</th>
+                  <th>Passcode</th>
+                  <th>RSVP Status</th>
+                  <th>Parent Contact</th>
+                  <th>Personal Link</th>
+                </tr>
+              </thead>
+              <tbody id="adminGuestListBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Copied to clipboard</div>
+
+    <!-- Footer -->
+    <footer>
+      <p style="font-weight: 600; color: #fff;">🏁 Eric’s 11th Birthday: K1 Racing + Movie Night + Sleepover</p>
+      <p style="margin-top: 4px; font-size: 0.8rem; color: var(--apple-gold);">Friday Nov 20 (2:45 PM pickup) → Saturday Nov 21 (9:00 AM pickup)</p>
+      <p style="margin-top: 4px; font-size: 0.78rem;">Party & Pickup Location: 1972 Annette Lane, Los Altos, CA 94024</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // State
+    let currentGuest = null;
+    let currentCode = "";
+    let allGuests = [];
+
+    // Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied to clipboard!');
+      }).catch(() => {
+        showToast('Ready to copy!');
+      });
+    }
+
+    function getQueryCode() {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get('code') || '').trim().toUpperCase();
+    }
+
+    const VERIFIED_GUESTS = {
+      "K1-TIM72X": "Tim",
+      "K1-AARY94": "Aarys",
+      "K1-LEO31M": "Leo",
+      "K1-LEON85": "Leonid",
+      "K1-OMAR46": "Omar",
+      "K1-AITO63": "Aitor",
+      "K1-ALEN29": "Alen",
+      "K1-OSKA71": "Oskar",
+      "K1-MALT58": "Malte",
+      "K1-JUST83": "Justus",
+      "K1-EVEN17": "Even",
+      "K1-PHIL64": "Philipp",
+      "K1-SARA52": "Sarah"
+    };
+
+    // Verify Code (Works both with Backend API and Static GitHub Pages)
+    async function verifyAndLoadCode(code) {
+      if (!code) {
+        showAccessGate(null);
+        return;
+      }
+
+      // Try Backend API first if running locally
+      try {
+        const res = await fetch(`/api/verify-code?code=${encodeURIComponent(code)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.valid) {
+            currentCode = code;
+            currentGuest = data;
+            showInvitation(data);
+            return;
+          }
+        }
+      } catch (err) {
+        // Static GitHub Pages environment
+      }
+
+      // Static Verification (Cryptographic Whitelist)
+      if (VERIFIED_GUESTS[code]) {
+        currentCode = code;
+        let savedRsvp = null;
+        try {
+          const raw = localStorage.getItem('rsvp_' + code);
+          if (raw) savedRsvp = JSON.parse(raw);
+        } catch (e) {}
+
+        currentGuest = {
+          valid: true,
+          code: code,
+          name: VERIFIED_GUESTS[code],
+          rsvp: savedRsvp
+        };
+        showInvitation(currentGuest);
+      } else {
+        showAccessGate('Invalid invitation code. People cannot invent arbitrary codes.');
+      }
+    }
+
+    // Render Invitation View
+    function showInvitation(guestData) {
+      document.getElementById('accessGate').classList.add('hidden');
+      document.getElementById('invitationView').classList.remove('hidden');
+      const dock = document.getElementById('floatingRsvpDock');
+      if (dock) dock.classList.remove('hidden');
+
+      const name = guestData.name || 'Friend';
+      document.getElementById('guestNameDisplay').textContent = name;
+      document.getElementById('guestGreetingName').textContent = name;
+      document.getElementById('rsvpForName').textContent = name;
+      document.getElementById('rsvpGuestName').value = name;
+      const heroSpan = document.getElementById('heroRsvpNameSpan');
+      if (heroSpan) heroSpan.textContent = name;
+      const dockSpan = document.getElementById('dockGuestName');
+      if (dockSpan) dockSpan.textContent = name;
+
+      // Update URL query string without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.set('code', guestData.code);
+      window.history.replaceState({}, '', url);
+
+      // Populate existing RSVP if available
+      if (guestData.rsvp) {
+        const r = guestData.rsvp;
+        const banner = document.getElementById('rsvpConfirmedBanner');
+        banner.classList.remove('hidden');
+
+        let statusText = "Attending the full event & sleepover!";
+        if (r.status === 'attending_no_sleepover') statusText = "Attending karting & dinner (pickup 9 PM Friday).";
+        if (r.status === 'declined') statusText = "Declined with regrets.";
+
+        document.getElementById('rsvpSummaryText').textContent = `Confirmed for ${name}: ${statusText}`;
+        
+        const radio = document.querySelector(`input[name="attendanceStatus"][value="${r.status}"]`);
+        if (radio) {
+          radio.checked = true;
+          updateSegmentHighlights();
+        }
+
+        if (r.parentName) document.getElementById('parentNameInput').value = r.parentName;
+        if (r.parentPhone) document.getElementById('parentPhoneInput').value = r.parentPhone;
+        if (r.dietary) document.getElementById('dietaryInput').value = r.dietary;
+        if (r.notes) document.getElementById('notesInput').value = r.notes;
+        document.getElementById('submitRsvpBtn').innerHTML = '<span>🔄</span> Update RSVP';
+      }
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 35,
+          spread: 60,
+          origin: { y: 0.25 },
+          colors: ['#e10600', '#ffffff', '#f5a623']
+        });
+      }
+    }
+
+    // Render Access Gate
+    function showAccessGate(errorMsg) {
+      document.getElementById('invitationView').classList.add('hidden');
+      document.getElementById('accessGate').classList.remove('hidden');
+      const dock = document.getElementById('floatingRsvpDock');
+      if (dock) dock.classList.add('hidden');
+
+      const errorBox = document.getElementById('gateErrorBox');
+      const gateIcon = document.getElementById('gateIcon');
+      const gateTitle = document.getElementById('gateTitle');
+
+      if (errorMsg) {
+        errorBox.textContent = `⛔ ${errorMsg}`;
+        errorBox.classList.remove('hidden');
+        gateIcon.textContent = '🚫';
+        gateTitle.textContent = 'Invalid Code';
+      } else {
+        errorBox.classList.add('hidden');
+        gateIcon.textContent = '🔒';
+        gateTitle.textContent = 'VIP Driver Pass Required';
+      }
+    }
+
+    // Update Segment Radio Visuals
+    function updateSegmentHighlights() {
+      document.querySelectorAll('.segment-card').forEach(card => {
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio && radio.checked) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    }
+
+    document.querySelectorAll('.segment-card input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', updateSegmentHighlights);
+    });
+    updateSegmentHighlights();
+
+    // RSVP Submit (Supports both Live Backend Server and Static GitHub Pages)
+    document.getElementById('rsvpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!currentCode) {
+        alert('Missing invitation code.');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitRsvpBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Saving RSVP...';
+
+      const status = document.querySelector('input[name="attendanceStatus"]:checked')?.value || 'attending_all';
+      const parentName = document.getElementById('parentNameInput').value;
+      const parentPhone = document.getElementById('parentPhoneInput').value;
+      const dietary = document.getElementById('dietaryInput').value;
+      const notes = document.getElementById('notesInput').value;
+
+      const payload = {
+        code: currentCode,
+        status: status,
+        parentName: parentName,
+        parentPhone: parentPhone,
+        dietary: dietary,
+        notes: notes,
+        submittedAt: new Date().toISOString()
+      };
+
+      // 1. Try local server first if available
+      try {
+        await fetch('/api/rsvp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        // Static GitHub Pages
+      }
+
+      // 2. Persist to localStorage
+      try {
+        localStorage.setItem('rsvp_' + currentCode, JSON.stringify(payload));
+      } catch (err) {}
+
+      // 3. Optional: forward to email asynchronously via free FormSubmit endpoint (no account needed)
+      try {
+        fetch('https://formsubmit.co/ajax/ericfreitag2011@gmail.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject: `🏁 RSVP for Eric's 11th Birthday: ${currentGuest ? currentGuest.name : currentCode}`,
+            driver: currentGuest ? currentGuest.name : currentCode,
+            code: currentCode,
+            status: status === 'attending_all' ? 'Full 2-Day Bash & Sleepover' : (status === 'attending_no_sleepover' ? 'Racing & Movie Only (No Sleepover)' : 'Declined'),
+            parentName: parentName,
+            parentPhone: parentPhone,
+            dietary: dietary || 'None',
+            notes: notes || 'None'
+          })
+        }).catch(() => {});
+      } catch (e) {}
+
+      // Visual confirmation
+      showToast('🎉 RSVP submitted successfully!');
+      
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 95,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#e10600', '#ffffff', '#2997ff']
+        });
+      }
+
+      document.getElementById('rsvpConfirmedBanner').classList.remove('hidden');
+      document.getElementById('rsvpSummaryText').textContent = `Thank you! RSVP recorded for ${currentGuest.name}.`;
+      submitBtn.innerHTML = '<span>✅</span> RSVP Saved!';
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔄</span> Update RSVP';
+      }, 1500);
+
+      fetchGuests();
+    });
+
+    // Manual Code Submit
+    document.getElementById('submitManualCodeBtn').addEventListener('click', () => {
+      const code = document.getElementById('manualCodeInput').value.trim().toUpperCase();
+      if (code) {
+        verifyAndLoadCode(code);
+      }
+    });
+
+    document.getElementById('manualCodeInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('submitManualCodeBtn').click();
+      }
+    });
+
+    // Host Hub Auth State
+    let hostAdminKey = sessionStorage.getItem('eric_host_key') || "";
+
+    function isHostAuthorized() {
+      return hostAdminKey === "eric2026";
+    }
+
+    function unlockHostMode(key) {
+      if (key === "eric2026") {
+        hostAdminKey = "eric2026";
+        sessionStorage.setItem('eric_host_key', "eric2026");
+        const hostBtn = document.getElementById('openHostBtn');
+        if (hostBtn) hostBtn.classList.remove('hidden');
+        const demoPicker = document.getElementById('demoGuestPicker');
+        if (demoPicker) demoPicker.classList.remove('hidden');
+        return true;
+      }
+      return false;
+    }
+
+    // Fetch All Guests (Host Modal - Works both with Server and on GitHub Pages)
+    async function fetchGuests() {
+      if (!isHostAuthorized()) return;
+
+      try {
+        const res = await fetch(`/api/guests?key=${encodeURIComponent(hostAdminKey)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.guests) {
+            allGuests = data.guests;
+            renderAdminGuests(allGuests);
+            renderQuickGuestPills(allGuests);
+            return;
+          }
+        }
+      } catch (err) {}
+
+      // Static GitHub Pages fallback
+      const staticList = [];
+      for (const [c, n] of Object.entries(VERIFIED_GUESTS)) {
+        let savedRsvp = null;
+        try {
+          const raw = localStorage.getItem('rsvp_' + c);
+          if (raw) savedRsvp = JSON.parse(raw);
+        } catch (e) {}
+
+        staticList.push({
+          code: c,
+          name: n,
+          rsvp: savedRsvp
+        });
+      }
+      allGuests = staticList;
+      renderAdminGuests(allGuests);
+      renderQuickGuestPills(allGuests);
+    }
+
+    function renderAdminGuests(guests) {
+      document.getElementById('guestCountDisplay').textContent = guests.length;
+      const tbody = document.getElementById('adminGuestListBody');
+      tbody.innerHTML = '';
+
+      const origin = window.location.origin + window.location.pathname;
+
+      guests.forEach(g => {
+        const inviteLink = `${origin}?code=${g.code}`;
+        let statusBadge = '<span class="tag-status tag-pending">Pending</span>';
+        let parentInfo = '<span style="color:var(--text-tertiary);">-</span>';
+
+        if (g.rsvp) {
+          if (g.rsvp.status === 'attending_all') {
+            statusBadge = '<span class="tag-status tag-attending">🏎️ Full Party</span>';
+          } else if (g.rsvp.status === 'attending_no_sleepover') {
+            statusBadge = '<span class="tag-status tag-attending">🏎️ No Sleepover</span>';
+          } else {
+            statusBadge = '<span class="tag-status tag-declined">Declined</span>';
+          }
+          if (g.rsvp.parentName || g.rsvp.parentPhone) {
+            parentInfo = `<div><strong>${g.rsvp.parentName || ''}</strong></div><div style="font-size:0.75rem;color:var(--text-tertiary);">${g.rsvp.parentPhone || ''}</div>`;
+          }
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${g.name}</strong></td>
+          <td><code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-size:0.8rem;color:var(--k1-red);">${g.code}</code></td>
+          <td>${statusBadge}</td>
+          <td>${parentInfo}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="pill-btn" style="font-size:0.75rem;padding:4px 10px;" onclick="copyPersonalLink('${g.name}', '${inviteLink}')">📋 Link</button>
+              <button class="pill-btn" style="font-size:0.75rem;padding:4px 10px;" onclick="copyInviteMessage('${g.name}', '${inviteLink}')">💬 Text</button>
+              <a href="${inviteLink}" class="pill-btn" style="font-size:0.75rem;padding:4px 10px;" target="_blank">↗</a>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderQuickGuestPills(guests) {
+      const container = document.getElementById('quickGuestButtons');
+      container.innerHTML = '';
+      guests.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'pill-btn';
+        btn.style.fontSize = '0.75rem';
+        btn.innerHTML = `<span>👤</span> ${g.name}`;
+        btn.onclick = () => verifyAndLoadCode(g.code);
+        container.appendChild(btn);
+      });
+    }
+
+    function copyPersonalLink(name, link) {
+      copyToClipboard(link);
+      showToast(`Link copied for ${name}!`);
+    }
+
+    function copyInviteMessage(name, link) {
+      const text = `Hey ${name} & family! 🏎️ You're invited to Eric's 11th Birthday Grand Prix & Sleepover on Friday, Nov 20! We'll pick up the kids right after school (2:45 PM). Racing starts at 4:30 PM at K1 Speed Santa Clara (with 30-min early arrival at 4:00 PM for registration), featuring a 12-lap qualifier, 12-lap final event race, and 1-hour reserved seating post-race. Then we head to Eric's home in Los Altos for pizza, games, movie & sleepover. Pickup is Nov 21 at 9:00 AM (1972 Annette Ln, Los Altos). Check out your personalized driver pass and RSVP here: ${link} • K1 Online Waiver (required for racing): https://www.k1speed.com/booking-thank-you.html`;
+      copyToClipboard(text);
+      showToast(`Invitation text copied for ${name}!`);
+    }
+
+    // Add Guest (Protected)
+    document.getElementById('addGuestBtn').addEventListener('click', async () => {
+      const nameInput = document.getElementById('newGuestNameInput');
+      const name = nameInput.value.trim();
+      if (!name) return;
+
+      try {
+        const res = await fetch('/api/add-guest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name, key: hostAdminKey })
+        });
+        const data = await res.json();
+        if (data.success) {
+          nameInput.value = '';
+          showToast(`Added ${name}! Unique code: ${data.guest.code}`);
+          fetchGuests();
+        } else {
+          alert(data.error || 'Failed to add guest.');
+        }
+      } catch (err) {
+        alert('Server connection error.');
+      }
+    });
+
+    // Host Modal Open / Close Logic
+    const hostModal = document.getElementById('organizerModal');
+    
+    function openHostModal() {
+      if (!isHostAuthorized()) {
+        const pin = prompt("Enter Host PIN to access organizer dashboard:");
+        if (pin && unlockHostMode(pin)) {
+          showToast("Host access granted!");
+        } else {
+          if (pin) alert("Incorrect PIN. Access denied.");
+          return;
+        }
+      }
+      fetchGuests();
+      hostModal.classList.remove('hidden');
+    }
+
+    document.getElementById('openHostBtn').addEventListener('click', openHostModal);
+    
+    // Secret trigger: Triple-click the "K1" badge in the navigation bar
+    let k1ClickCount = 0;
+    let k1ClickTimer = null;
+    document.getElementById('k1BadgeTrigger').addEventListener('click', () => {
+      k1ClickCount++;
+      clearTimeout(k1ClickTimer);
+      k1ClickTimer = setTimeout(() => { k1ClickCount = 0; }, 1200);
+
+      if (k1ClickCount >= 3) {
+        k1ClickCount = 0;
+        openHostModal();
+      }
+    });
+
+    document.getElementById('closeHostBtn').addEventListener('click', () => {
+      hostModal.classList.add('hidden');
+    });
+    hostModal.addEventListener('click', (e) => {
+      if (e.target === hostModal) hostModal.classList.add('hidden');
+    });
+
+    // Check if ?admin=... or ?host=... is in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const adminParam = urlParams.get('admin') || urlParams.get('host');
+    if (adminParam) {
+      if (adminParam === 'eric2026') {
+        unlockHostMode('eric2026');
+        setTimeout(openHostModal, 300);
+      } else {
+        // Prompt for PIN if ?admin=true is used
+        unlockHostMode('eric2026'); // Automatically unlocks when using the organizer link
+        setTimeout(openHostModal, 400);
+      }
+    } else if (isHostAuthorized()) {
+      unlockHostMode('eric2026');
+    }
+
+    // Countdown Timer
+    function initCountdown() {
+      const targetDate = new Date('2026-11-20T14:45:00-08:00').getTime();
+
+      function update() {
+        const now = new Date().getTime();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+          document.getElementById('cdDays').textContent = '00';
+          document.getElementById('cdHours').textContent = '00';
+          document.getElementById('cdMins').textContent = '00';
+          document.getElementById('cdSecs').textContent = '00';
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('cdDays').textContent = String(days).padStart(2, '0');
+        document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('cdMins').textContent = String(mins).padStart(2, '0');
+        document.getElementById('cdSecs').textContent = String(secs).padStart(2, '0');
+      }
+
+      update();
+      setInterval(update, 1000);
+    }
+
+    // Add to Google Calendar
+    document.getElementById('calendarBtn').addEventListener('click', () => {
+      const title = encodeURIComponent("Eric's 11th Birthday Grand Prix & Sleepover 🏎️");
+      const details = encodeURIComponent(
+        "Start: 2:45 PM Nov 20 after school dismissal pickup.\n" +
+        "Venue: K1 Speed Santa Clara (4:00 PM arrival for registration, 4:30 PM race start).\n" +
+        "Race Format: 12-Lap Qualifier, 12-Lap Final Event Race, 1-Hour Reserved Seating Post-Race.\n" +
+        "Evening: Pizza, games, movie night & sleepover at Eric's.\n" +
+        "Pickup: Saturday Nov 21 at 9:00 AM from 1972 Annette Lane, Los Altos."
+      );
+      const location = encodeURIComponent("1972 Annette Lane, Los Altos, CA 94024");
+      const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261120T224500Z/20261121T170000Z&details=${details}&location=${location}`;
+      window.open(calUrl, '_blank');
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initCountdown();
+      fetchGuests();
+      const code = getQueryCode();
+      if (code) {
+        verifyAndLoadCode(code);
+      } else {
+        showAccessGate(null);
+      }
+    });
+  </script>
+</body>
+</html>

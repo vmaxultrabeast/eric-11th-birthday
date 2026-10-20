@@ -1,0 +1,77 @@
+{
+  "adminKey": "eric2026",
+  "guests": {
+    "K1-TIM72X": {
+      "name": "Tim",
+      "code": "K1-TIM72X",
+      "rsvp": null
+    },
+    "K1-AARY94": {
+      "name": "Aarys",
+      "code": "K1-AARY94",
+      "rsvp": null
+    },
+    "K1-LEO31M": {
+      "name": "Leo",
+      "code": "K1-LEO31M",
+      "rsvp": null
+    },
+    "K1-LEON85": {
+      "name": "Leonid",
+      "code": "K1-LEON85",
+      "rsvp": null
+    },
+    "K1-OMAR46": {
+      "name": "Omar",
+      "code": "K1-OMAR46",
+      "rsvp": null
+    },
+    "K1-AITO63": {
+      "name": "Aitor",
+      "code": "K1-AITO63",
+      "rsvp": null
+    },
+    "K1-ALEN29": {
+      "name": "Alen",
+      "code": "K1-ALEN29",
+      "rsvp": null
+    },
+    "K1-OSKA71": {
+      "name": "Oskar",
+      "code": "K1-OSKA71",
+      "rsvp": null
+    },
+    "K1-MALT58": {
+      "name": "Malte",
+      "code": "K1-MALT58",
+      "rsvp": null
+    },
+    "K1-JUST83": {
+      "name": "Justus",
+      "code": "K1-JUST83",
+      "rsvp": null
+    },
+    "K1-EVEN17": {
+      "name": "Even",
+      "code": "K1-EVEN17",
+      "rsvp": null
+    },
+    "K1-PHIL64": {
+      "name": "Philipp",
+      "code": "K1-PHIL64",
+      "rsvp": null
+    },
+    "K1-SARA52": {
+      "name": "Sarah",
+      "code": "K1-SARA52",
+      "rsvp": {
+        "status": "attending_all",
+        "parentName": "Anna & Mark",
+        "parentPhone": "(408) 555-9912",
+        "dietary": "Vegetarian",
+        "notes": "Sarah is so excited to race!",
+        "submittedAt": "now"
+      }
+    }
+  }
+}
