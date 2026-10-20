@@ -2055,7 +2055,7 @@
               const eventData = JSON.parse(line);
               if (eventData.event === 'message' && eventData.message) {
                 const parsed = JSON.parse(eventData.message);
-                if (parsed.code) {
+                if (parsed.code && parsed.status) {
                   cloudRsvps[parsed.code] = parsed;
                 }
               }
@@ -2123,12 +2123,12 @@
         let statusBadge = '<span class="tag-status tag-pending">Pending</span>';
         let parentInfo = '<span style="color:var(--text-tertiary);">-</span>';
 
-        if (g.rsvp) {
+        if (g.rsvp && g.rsvp.status) {
           if (g.rsvp.status === 'attending_all') {
             statusBadge = '<span class="tag-status tag-attending">🏎️ Full Party</span>';
           } else if (g.rsvp.status === 'attending_no_sleepover') {
             statusBadge = '<span class="tag-status tag-attending">🏎️ No Sleepover</span>';
-          } else {
+          } else if (g.rsvp.status === 'declined') {
             statusBadge = '<span class="tag-status tag-declined">Declined</span>';
           }
           if (g.rsvp.parentName || g.rsvp.parentPhone) {
