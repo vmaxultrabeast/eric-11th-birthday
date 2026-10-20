@@ -1673,6 +1673,15 @@
         return;
       }
 
+      // Check if guest was removed
+      try {
+        const removed = JSON.parse(localStorage.getItem('removed_guests') || '[]');
+        if (removed.includes(code)) {
+          showAccessGate('This invitation pass has been removed by Eric’s family.');
+          return;
+        }
+      } catch (e) {}
+
       // Try Backend API first if running locally
       try {
         const res = await fetch(`/api/verify-code?code=${encodeURIComponent(code)}`);
@@ -1982,6 +1991,12 @@
       } catch (err) {}
 
       // Static GitHub Pages fallback + Real-Time Cloud Sync via ntfy.sh
+      let removedList = [];
+      try {
+        const stored = localStorage.getItem('removed_guests');
+        if (stored) removedList = JSON.parse(stored);
+      } catch (e) {}
+
       const cloudRsvps = {};
       try {
         const cloudRes = await fetch('https://ntfy.sh/eric-11th-birthday-k1-official/json?poll=1');
@@ -2007,6 +2022,8 @@
 
       const staticList = [];
       for (const [c, n] of Object.entries(VERIFIED_GUESTS)) {
+        if (removedList.includes(c)) continue; // Filter out removed guests
+
         let savedRsvp = cloudRsvps[c] || null;
         if (!savedRsvp) {
           try {
@@ -2058,10 +2075,11 @@
           <td>${statusBadge}</td>
           <td>${parentInfo}</td>
           <td>
-            <div style="display:flex;gap:6px;">
+            <div style="display:flex;gap:6px;align-items:center;">
               <button class="pill-btn" style="font-size:0.75rem;padding:4px 10px;" onclick="copyPersonalLink('${g.name}', '${inviteLink}')">📋 Link</button>
               <button class="pill-btn" style="font-size:0.75rem;padding:4px 10px;" onclick="copyInviteMessage('${g.name}', '${inviteLink}')">💬 Text</button>
               <a href="${inviteLink}" class="pill-btn" style="font-size:0.75rem;padding:4px 10px;" target="_blank">↗</a>
+              <button class="pill-btn" style="font-size:0.75rem;padding:4px 8px;color:#f87171;border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);" onclick="confirmRemoveGuest('${g.name}', '${g.code}')" title="Remove ${g.name}">🗑️</button>
             </div>
           </td>
         `;
@@ -2091,6 +2109,48 @@
       const text = `Hey ${name} & family! 🏎️ You're invited to Eric's 11th Birthday Grand Prix & Sleepover on Friday, Nov 20! We'll pick up the kids right after school (2:45 PM). Racing starts at 4:30 PM at K1 Speed Santa Clara (with 30-min early arrival at 4:00 PM for registration), featuring a 12-lap qualifier, 12-lap final event race, and 1-hour reserved seating post-race. Then we head to Eric's home in Los Altos for pizza, games, movie & sleepover. Pickup is Nov 21 at 9:00 AM (1972 Annette Ln, Los Altos).\n\nVIP Invite & RSVP: ${link}\nK1 Online Waiver (mandatory): https://www.k1speed.com/booking-thank-you.html\nJoin Party WhatsApp Group: https://chat.whatsapp.com/GEkhpZfPtxtCYfENWDchMf?s=sw&p=a&mlu=0`;
       copyToClipboard(text);
       showToast(`Invitation text copied for ${name}!`);
+    }
+
+    // Remove Guest with Double Verification Popup
+    async function confirmRemoveGuest(name, code) {
+      // 1st Verification Popup
+      const firstCheck = confirm(
+        `⚠️ VERIFICATION 1 OF 2:\n\nAre you sure you want to remove "${name}" (${code}) from the birthday invitation list?`
+      );
+      if (!firstCheck) return;
+
+      // 2nd Verification Popup
+      const secondCheck = confirm(
+        `🛑 FINAL VERIFICATION 2 OF 2:\n\nPlease confirm once more: Are you ABSOLUTELY SURE you want to delete ${name}?\n\nThis will permanently revoke their VIP driver pass and deactivate their personal invitation link.`
+      );
+      if (!secondCheck) return;
+
+      // Execute removal
+      // 1. Try local server endpoint if running
+      try {
+        await fetch('/api/delete-guest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code, key: hostAdminKey })
+        });
+      } catch (e) {}
+
+      // 2. Persist in localStorage removed list (for static GitHub Pages)
+      let removedList = [];
+      try {
+        const stored = localStorage.getItem('removed_guests');
+        if (stored) removedList = JSON.parse(stored);
+      } catch (e) {}
+      if (!removedList.includes(code)) {
+        removedList.push(code);
+        localStorage.setItem('removed_guests', JSON.stringify(removedList));
+      }
+
+      // 3. Clear any saved RSVP for this code
+      localStorage.removeItem('rsvp_' + code);
+
+      showToast(`Removed ${name} from guest list.`);
+      setTimeout(fetchGuests, 250);
     }
 
     // Reset All RSVPs Handler
