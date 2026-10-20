@@ -52,6 +52,12 @@ Once published, share each child's personalized link:
 
 ---
 
+## 💬 Party WhatsApp Group
+Parents can join the official birthday coordination group directly:
+[https://chat.whatsapp.com/GEkhpZfPtxtCYfENWDchMf?s=sw&p=a&mlu=0](https://chat.whatsapp.com/GEkhpZfPtxtCYfENWDchMf?s=sw&p=a&mlu=0)
+
+---
+
 ## 🔒 Organizer / Host Dashboard
 Only Eric's parents can open the Host Dashboard by visiting:
 `https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/?admin=eric2026`

@@ -64,14 +64,7 @@
     "K1-SARA52": {
       "name": "Sarah",
       "code": "K1-SARA52",
-      "rsvp": {
-        "status": "attending_all",
-        "parentName": "Anna & Mark",
-        "parentPhone": "(408) 555-9912",
-        "dietary": "Vegetarian",
-        "notes": "Sarah is so excited to race!",
-        "submittedAt": "now"
-      }
+      "rsvp": null
     }
   }
 }

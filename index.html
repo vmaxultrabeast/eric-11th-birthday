@@ -1396,25 +1396,29 @@
         </div>
 
         <div id="rsvpConfirmedBanner" class="confirmed-banner hidden">
-          <div style="font-size: 1.5rem;">✅</div>
+          <div style="font-size: 1.8rem; line-height: 1;">✅</div>
           <div style="flex: 1;">
-            <div style="font-weight: 700; color: #fff;">RSVP Confirmed!</div>
-            <div style="font-size: 0.85rem; color: #a7f3d0;" id="rsvpSummaryText">Thank you! Your spot on the grid is locked.</div>
+            <div style="font-weight: 800; font-size: 1.15rem; color: #fff;">RSVP Confirmed!</div>
+            <div style="font-size: 0.9rem; color: #a7f3d0; margin-top: 2px;" id="rsvpSummaryText">Thank you! Your spot on the grid is locked.</div>
             
-            <!-- Direct 1-Click WhatsApp / SMS Confirmation Card for Parents -->
-            <div id="directMessageCta" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(46, 196, 182, 0.3);">
-              <p style="font-size: 0.82rem; color: #fff; margin-bottom: 8px;">
-                📲 <strong>Send confirmation directly to Eric's parents:</strong>
+            <!-- WhatsApp Group Invite Card -->
+            <div style="margin-top: 16px; padding: 16px 18px; background: rgba(37, 211, 102, 0.12); border: 1.5px solid rgba(37, 211, 102, 0.45); border-radius: var(--radius-md);">
+              <div style="font-weight: 700; color: #fff; font-size: 0.95rem; margin-bottom: 4px;">
+                💬 Next Step: Join the Party WhatsApp Group
+              </div>
+              <p style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.85); line-height: 1.45; margin-bottom: 12px;">
+                We created a group for all attending parents for live race day updates, K1 photo sharing, and pickup coordination.
               </p>
-              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                <a id="whatsappConfirmBtn" href="#" target="_blank" class="pill-btn" style="background: #25D366; color: #fff !important; border-color: transparent; font-weight: 700; font-size: 0.82rem; padding: 7px 14px;">
-                  <span>💬</span> Send via WhatsApp
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                <a id="joinGroupBtn" href="https://chat.whatsapp.com/GEkhpZfPtxtCYfENWDchMf?s=sw&p=a&mlu=0" target="_blank" rel="noopener" class="pill-btn" style="background: #25D366; color: #fff !important; border-color: transparent; font-weight: 800; font-size: 0.9rem; padding: 10px 20px; box-shadow: 0 4px 18px rgba(37, 211, 102, 0.4);">
+                  <span>💬</span> Join WhatsApp Group ↗
                 </a>
-                <a id="smsConfirmBtn" href="#" class="pill-btn" style="background: #2997ff; color: #fff !important; border-color: transparent; font-weight: 700; font-size: 0.82rem; padding: 7px 14px;">
-                  <span>📱</span> Send via Text / iMessage
+                <a id="smsConfirmBtn" href="#" class="pill-btn" style="background: rgba(255, 255, 255, 0.08); font-size: 0.8rem; padding: 8px 14px;">
+                  <span>📱</span> Also Send Direct Text
                 </a>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -1553,10 +1557,16 @@
               <p style="font-size: 0.75rem; color: var(--text-tertiary);">Share personalized links & track RSVPs in real time</p>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="https://ntfy.sh/eric-11th-birthday-k1-rsvps" target="_blank" rel="noopener" class="pill-btn" style="color: var(--apple-blue); border-color: rgba(41, 151, 255, 0.4); font-size: 0.75rem; text-decoration: none;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <a href="https://chat.whatsapp.com/GEkhpZfPtxtCYfENWDchMf?s=sw&p=a&mlu=0" target="_blank" rel="noopener" class="pill-btn" style="background: rgba(37, 211, 102, 0.2); color: #25D366 !important; border-color: rgba(37, 211, 102, 0.4); font-size: 0.75rem; text-decoration: none;">
+              <span>💬</span> WhatsApp Group ↗
+            </a>
+            <a href="https://ntfy.sh/eric-11th-birthday-k1-official" target="_blank" rel="noopener" class="pill-btn" style="color: var(--apple-blue); border-color: rgba(41, 151, 255, 0.4); font-size: 0.75rem; text-decoration: none;">
               <span>🔔</span> Live Cloud Feed ↗
             </a>
+            <button class="pill-btn" id="resetRsvpsBtn" style="color: #f87171; border-color: rgba(239, 68, 68, 0.4); font-size: 0.75rem;">
+              <span>🔄</span> Reset RSVPs
+            </button>
             <button class="close-x" id="closeHostBtn">&times;</button>
           </div>
         </div>
@@ -1848,7 +1858,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            topic: 'eric-11th-birthday-k1-rsvps',
+            topic: 'eric-11th-birthday-k1-official',
             title: `🏁 RSVP: ${currentGuest ? currentGuest.name : currentCode} (${status === 'declined' ? 'Declined' : 'Attending'})`,
             message: JSON.stringify(payload),
             tags: status === 'declined' ? ['x', 'racing_car'] : ['white_check_mark', 'racing_car'],
@@ -1878,14 +1888,24 @@
       } catch (e) {}
 
       // 5. Setup 1-Click WhatsApp & SMS Confirmation for parents
+      // Replace with your phone number (digits only, e.g. "14085551234") to send directly to your chat
+      const HOST_PHONE = ""; 
       const driverName = currentGuest ? currentGuest.name : 'Our child';
       const statusTitle = status === 'attending_all' ? 'ATTENDING the Full 2-Day Bash & Sleepover (Nov 20-21)' : (status === 'attending_no_sleepover' ? 'attending Karting & Movie only (no sleepover)' : 'unable to attend');
       const directMsgText = `Hey Eric & family! 🏎️ ${parentName} here confirming that ${driverName} is ${statusTitle} for Eric's 11th Birthday Grand Prix! Contact: ${parentPhone}. Dietary: ${dietary || 'None'}. Notes: ${notes || 'See you on the track!'}`;
 
       const waBtn = document.getElementById('whatsappConfirmBtn');
-      if (waBtn) waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(directMsgText)}`;
+      if (waBtn) {
+        waBtn.href = HOST_PHONE 
+          ? `https://api.whatsapp.com/send?phone=${HOST_PHONE}&text=${encodeURIComponent(directMsgText)}`
+          : `https://api.whatsapp.com/send?text=${encodeURIComponent(directMsgText)}`;
+      }
       const smsBtn = document.getElementById('smsConfirmBtn');
-      if (smsBtn) smsBtn.href = `sms:?&body=${encodeURIComponent(directMsgText)}`;
+      if (smsBtn) {
+        smsBtn.href = HOST_PHONE 
+          ? `sms:${HOST_PHONE}?&body=${encodeURIComponent(directMsgText)}`
+          : `sms:?&body=${encodeURIComponent(directMsgText)}`;
+      }
 
       // Visual confirmation
       showToast('🎉 RSVP submitted successfully!');
@@ -1964,7 +1984,7 @@
       // Static GitHub Pages fallback + Real-Time Cloud Sync via ntfy.sh
       const cloudRsvps = {};
       try {
-        const cloudRes = await fetch('https://ntfy.sh/eric-11th-birthday-k1-rsvps/json?poll=1');
+        const cloudRes = await fetch('https://ntfy.sh/eric-11th-birthday-k1-official/json?poll=1');
         if (cloudRes.ok) {
           const text = await cloudRes.text();
           const lines = text.trim().split('\n');
@@ -2068,9 +2088,36 @@
     }
 
     function copyInviteMessage(name, link) {
-      const text = `Hey ${name} & family! 🏎️ You're invited to Eric's 11th Birthday Grand Prix & Sleepover on Friday, Nov 20! We'll pick up the kids right after school (2:45 PM). Racing starts at 4:30 PM at K1 Speed Santa Clara (with 30-min early arrival at 4:00 PM for registration), featuring a 12-lap qualifier, 12-lap final event race, and 1-hour reserved seating post-race. Then we head to Eric's home in Los Altos for pizza, games, movie & sleepover. Pickup is Nov 21 at 9:00 AM (1972 Annette Ln, Los Altos). Check out your personalized driver pass and RSVP here: ${link} • K1 Online Waiver (required for racing): https://www.k1speed.com/booking-thank-you.html`;
+      const text = `Hey ${name} & family! 🏎️ You're invited to Eric's 11th Birthday Grand Prix & Sleepover on Friday, Nov 20! We'll pick up the kids right after school (2:45 PM). Racing starts at 4:30 PM at K1 Speed Santa Clara (with 30-min early arrival at 4:00 PM for registration), featuring a 12-lap qualifier, 12-lap final event race, and 1-hour reserved seating post-race. Then we head to Eric's home in Los Altos for pizza, games, movie & sleepover. Pickup is Nov 21 at 9:00 AM (1972 Annette Ln, Los Altos).\n\nVIP Invite & RSVP: ${link}\nK1 Online Waiver (mandatory): https://www.k1speed.com/booking-thank-you.html\nJoin Party WhatsApp Group: https://chat.whatsapp.com/GEkhpZfPtxtCYfENWDchMf?s=sw&p=a&mlu=0`;
       copyToClipboard(text);
       showToast(`Invitation text copied for ${name}!`);
+    }
+
+    // Reset All RSVPs Handler
+    const resetBtn = document.getElementById('resetRsvpsBtn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', async () => {
+        if (!confirm("Are you sure you want to reset all RSVPs to pending?")) return;
+
+        // 1. Clear all localStorage RSVP entries
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith('rsvp_')) {
+            localStorage.removeItem(key);
+          }
+        });
+
+        // 2. Clear backend database if running local server
+        try {
+          await fetch('/api/reset-rsvps', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: hostAdminKey })
+          });
+        } catch (e) {}
+
+        showToast("RSVPs have been reset!");
+        setTimeout(fetchGuests, 300);
+      });
     }
 
     // Add Guest (Protected)
