@@ -2236,12 +2236,13 @@
       resetBtn.addEventListener('click', async () => {
         if (!confirm("Are you sure you want to reset all RSVPs to pending?")) return;
 
-        // 1. Clear all localStorage RSVP entries
+        // 1. Clear all localStorage RSVP entries and restore any removed guests
         Object.keys(localStorage).forEach(key => {
           if (key.startsWith('rsvp_')) {
             localStorage.removeItem(key);
           }
         });
+        localStorage.removeItem('removed_guests');
 
         // 2. Clear backend database if running local server
         try {
@@ -2265,7 +2266,16 @@
 
       const newCode = generateGuestCode(name);
 
-      // 1. Try local server endpoint if running
+      // 1. Un-remove if this code was previously in removed_guests
+      try {
+        let removed = JSON.parse(localStorage.getItem('removed_guests') || '[]');
+        if (removed.includes(newCode)) {
+          removed = removed.filter(c => c !== newCode);
+          localStorage.setItem('removed_guests', JSON.stringify(removed));
+        }
+      } catch (e) {}
+
+      // 2. Try local server endpoint if running
       try {
         await fetch('/api/add-guest', {
           method: 'POST',
@@ -2276,7 +2286,7 @@
         // Static GitHub Pages mode - perfectly normal!
       }
 
-      // 2. Persist in custom_guests in localStorage
+      // 3. Persist in custom_guests in localStorage
       try {
         const custom = JSON.parse(localStorage.getItem('custom_guests') || '{}');
         custom[newCode] = name;
