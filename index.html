@@ -1605,7 +1605,7 @@
 
         <div class="modal-content">
           <!-- Add Guest Form -->
-          <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 24px;">
+          <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 16px;">
             <h4 style="font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; color: var(--k1-red);">
               ➕ Add Invited Friend (Generates Cryptographic Safe Code)
             </h4>
@@ -1617,11 +1617,58 @@
             </div>
           </div>
 
+          <!-- Google Sheets Cloud Sync Card -->
+          <div style="background: rgba(37, 211, 102, 0.06); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: var(--radius-md); padding: 16px 18px; margin-bottom: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+              <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.88rem; display: flex; align-items: center; gap: 6px;">
+                  <span>📊</span> Permanent Google Sheets Sync
+                  <span id="sheetStatusPill" style="font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-pill); background: rgba(255,255,255,0.08); color: var(--text-tertiary);">Not Connected</span>
+                </div>
+                <div style="font-size: 0.76rem; color: rgba(255, 255, 255, 0.7); margin-top: 2px;">
+                  All RSVPs save permanently to your Google Sheet in real time. Never expires.
+                </div>
+              </div>
+              <div style="display: flex; gap: 8px; flex: 1; min-width: 280px; justify-content: flex-end;">
+                <input type="text" id="googleSheetsUrlInput" class="apple-input" placeholder="Paste Google Apps Script Web App URL..." style="font-size: 0.76rem; padding: 6px 10px;">
+                <button class="pill-btn primary" id="saveSheetsUrlBtn" style="font-size: 0.75rem; white-space: nowrap; padding: 6px 14px; background: #25D366; color: #000; border: none; font-weight: 700;">
+                  Connect Sheet
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Guest List & Live Links -->
           <h4 style="font-size: 0.88rem; font-weight: 700; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
             <span>📋 Invited Racers (<span id="guestCountDisplay">0</span>)</span>
             <span style="font-size: 0.75rem; color: var(--text-tertiary); font-weight: normal;">No one can guess or fabricate codes</span>
           </h4>
+
+          <!-- RSVP Live Counter & Action Toolbar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px 16px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span id="badgeAttending" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.4); color: #25D366; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 700;">
+                🏎️ Attending: 0
+              </span>
+              <span id="badgeDeclined" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 4px 10px; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 700;">
+                ❌ Declined: 0
+              </span>
+              <span id="badgePending" style="background: rgba(255, 255, 255, 0.07); border: 1px solid var(--border-subtle); color: var(--text-secondary); padding: 4px 10px; border-radius: var(--radius-pill); font-size: 0.78rem; font-weight: 700;">
+                ⏳ Pending: 0
+              </span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <button class="pill-btn" onclick="copyAttendingRoster()" style="font-size: 0.75rem; background: rgba(37, 211, 102, 0.2); color: #25D366 !important; border-color: rgba(37, 211, 102, 0.4);">
+                <span>📋</span> Copy WhatsApp Roster
+              </button>
+              <button class="pill-btn" onclick="exportGuestsJson()" style="font-size: 0.75rem; color: var(--apple-blue); border-color: rgba(41, 151, 255, 0.4);">
+                <span>💾</span> Backup JSON
+              </button>
+              <button class="pill-btn" onclick="importGuestsJson()" style="font-size: 0.75rem; color: var(--text-secondary); border-color: var(--border);">
+                <span>📥</span> Import
+              </button>
+            </div>
+          </div>
 
           <div style="overflow-x: auto;">
             <table class="guest-table">
@@ -1696,6 +1743,8 @@
     let currentGuest = null;
     let currentCode = "";
     let allGuests = [];
+    const DEFAULT_SHEETS_URL = "https://script.google.com/macros/s/AKfycbylSKqWmW2edvuB81u7KaD4oGEdjFAuhGBgDFh-ensrkGCU9wBvlGo_uSr6q9pKraSw/exec";
+    let GOOGLE_SHEETS_URL = localStorage.getItem('eric_sheets_url') || DEFAULT_SHEETS_URL;
 
     // Toast
     function showToast(msg) {
@@ -1995,6 +2044,27 @@
         console.warn('ntfy broadcast error:', err);
       }
 
+      // 3b. Sync directly to Google Sheets (Permanent Cloud Database!)
+      if (GOOGLE_SHEETS_URL) {
+        try {
+          fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              code: currentCode,
+              driver: currentGuest ? currentGuest.name : currentCode,
+              status: status,
+              parentName: parentName,
+              parentPhone: parentPhone,
+              dietary: dietary,
+              notes: notes,
+              submittedAt: new Date().toISOString()
+            })
+          }).catch(() => {});
+        } catch (e) {}
+      }
+
       // 4. Forward to email via FormSubmit
       try {
         fetch('https://formsubmit.co/ajax/ericfreitag2011@gmail.com', {
@@ -2170,6 +2240,26 @@
         console.warn('Cloud poll error:', e);
       }
 
+      // Google Sheets Cloud Sync (Permanent, never expires!)
+      if (GOOGLE_SHEETS_URL) {
+        try {
+          const sheetRes = await fetch(GOOGLE_SHEETS_URL);
+          if (sheetRes.ok) {
+            const sheetData = await sheetRes.json();
+            if (sheetData && sheetData.rsvps) {
+              for (const [code, rsvp] of Object.entries(sheetData.rsvps)) {
+                cloudRsvps[code] = rsvp;
+                try {
+                  localStorage.setItem('rsvp_' + code, JSON.stringify(rsvp));
+                } catch (e) {}
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Google Sheets sync notice:', e);
+        }
+      }
+
       const staticList = [];
       for (const [c, n] of Object.entries(VERIFIED_GUESTS)) {
         if (removedList.includes(c)) continue; // Filter out removed guests
@@ -2179,6 +2269,11 @@
           try {
             const raw = localStorage.getItem('rsvp_' + c);
             if (raw) savedRsvp = JSON.parse(raw);
+          } catch (e) {}
+        } else {
+          // Permanently save to host localStorage so it survives ntfy 12h expiration!
+          try {
+            localStorage.setItem('rsvp_' + c, JSON.stringify(savedRsvp));
           } catch (e) {}
         }
 
@@ -2204,6 +2299,10 @@
               const raw = localStorage.getItem('rsvp_' + c);
               if (raw) savedRsvp = JSON.parse(raw);
             } catch (e) {}
+          } else {
+            try {
+              localStorage.setItem('rsvp_' + c, JSON.stringify(savedRsvp));
+            } catch (e) {}
           }
           staticList.push({
             code: c,
@@ -2223,31 +2322,52 @@
       const tbody = document.getElementById('adminGuestListBody');
       tbody.innerHTML = '';
 
+      let attendingCount = 0;
+      let declinedCount = 0;
+      let pendingCount = 0;
+
       const origin = window.location.origin + window.location.pathname;
 
       guests.forEach(g => {
         const inviteLink = `${origin}?code=${g.code}`;
-        let statusBadge = '<span class="tag-status tag-pending">Pending</span>';
-        let parentInfo = '<span style="color:var(--text-tertiary);">-</span>';
+        const currentStatus = (g.rsvp && g.rsvp.status) ? g.rsvp.status : 'pending';
 
-        if (g.rsvp && g.rsvp.status) {
-          if (g.rsvp.status === 'attending_all') {
-            statusBadge = '<span class="tag-status tag-attending">🏎️ Full Party</span>';
-          } else if (g.rsvp.status === 'attending_no_sleepover') {
-            statusBadge = '<span class="tag-status tag-attending">🏎️ No Sleepover</span>';
-          } else if (g.rsvp.status === 'declined') {
-            statusBadge = '<span class="tag-status tag-declined">Declined</span>';
-          }
-          if (g.rsvp.parentName || g.rsvp.parentPhone) {
-            parentInfo = `<div><strong>${g.rsvp.parentName || ''}</strong></div><div style="font-size:0.75rem;color:var(--text-tertiary);">${g.rsvp.parentPhone || ''}</div>`;
-          }
+        if (currentStatus === 'attending_all' || currentStatus === 'attending_no_sleepover') {
+          attendingCount++;
+        } else if (currentStatus === 'declined') {
+          declinedCount++;
+        } else {
+          pendingCount++;
+        }
+
+        // Interactive status select for host
+        const statusSelect = `
+          <select class="host-status-select" onchange="hostUpdateStatus('${g.code}', this.value, '${g.name}')" style="background: rgba(255,255,255,0.08); color: ${currentStatus.startsWith('attending') ? '#34d399' : (currentStatus === 'declined' ? '#f87171' : '#9ca3af')}; border: 1px solid ${currentStatus.startsWith('attending') ? 'rgba(52, 211, 153, 0.5)' : (currentStatus === 'declined' ? 'rgba(239, 68, 68, 0.5)' : 'var(--border-subtle)')}; border-radius: 6px; padding: 4px 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer; outline: none;">
+            <option value="pending" ${currentStatus === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+            <option value="attending_all" ${currentStatus === 'attending_all' ? 'selected' : ''}>🏎️ Full Bash & Sleepover</option>
+            <option value="attending_no_sleepover" ${currentStatus === 'attending_no_sleepover' ? 'selected' : ''}>🏎️ Karting Only (No Sleep)</option>
+            <option value="declined" ${currentStatus === 'declined' ? 'selected' : ''}>❌ Declined</option>
+          </select>
+        `;
+
+        let parentInfo = `<button class="pill-btn" style="font-size:0.72rem;padding:2px 8px;opacity:0.75;" onclick="hostEditContact('${g.code}', '${g.name}')">+ Add Phone</button>`;
+        if (g.rsvp && (g.rsvp.parentName || g.rsvp.parentPhone)) {
+          parentInfo = `
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div>
+                <div style="font-weight:600;color:#fff;">${g.rsvp.parentName || ''}</div>
+                <div style="font-size:0.75rem;color:var(--text-tertiary);">${g.rsvp.parentPhone || ''}</div>
+              </div>
+              <button class="pill-btn" style="font-size:0.68rem;padding:2px 6px;opacity:0.6;" onclick="hostEditContact('${g.code}', '${g.name}')" title="Edit Contact">✏️</button>
+            </div>
+          `;
         }
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><strong>${g.name}</strong></td>
           <td><code style="background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:4px;font-size:0.8rem;color:var(--k1-red);">${g.code}</code></td>
-          <td>${statusBadge}</td>
+          <td>${statusSelect}</td>
           <td>${parentInfo}</td>
           <td>
             <div style="display:flex;gap:6px;align-items:center;">
@@ -2260,6 +2380,193 @@
         `;
         tbody.appendChild(tr);
       });
+
+      // Update counters
+      const bAtt = document.getElementById('badgeAttending');
+      const bDec = document.getElementById('badgeDeclined');
+      const bPen = document.getElementById('badgePending');
+      if (bAtt) bAtt.textContent = `🏎️ Attending: ${attendingCount}`;
+      if (bDec) bDec.textContent = `❌ Declined: ${declinedCount}`;
+      if (bPen) bPen.textContent = `⏳ Pending: ${pendingCount}`;
+    }
+
+    function hostUpdateStatus(code, newStatus, guestName) {
+      let existing = null;
+      try {
+        const raw = localStorage.getItem('rsvp_' + code);
+        if (raw) existing = JSON.parse(raw);
+      } catch (e) {}
+
+      if (newStatus === 'pending') {
+        localStorage.removeItem('rsvp_' + code);
+        showToast(`Reset ${guestName} to Pending`);
+      } else {
+        const updated = {
+          code: code,
+          status: newStatus,
+          parentName: existing?.parentName || '',
+          parentPhone: existing?.parentPhone || '',
+          dietary: existing?.dietary || '',
+          notes: existing?.notes || 'Marked by Host',
+          submittedAt: new Date().toISOString()
+        };
+        try {
+          localStorage.setItem('rsvp_' + code, JSON.stringify(updated));
+        } catch (e) {}
+
+        // Re-broadcast to ntfy cloud
+        try {
+          fetch('https://ntfy.sh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              topic: 'eric-11th-birthday-k1-official',
+              title: `🏁 RSVP: ${guestName} (${newStatus === 'declined' ? 'Declined' : 'Attending'})`,
+              message: JSON.stringify(updated),
+              tags: newStatus === 'declined' ? ['x', 'racing_car'] : ['white_check_mark', 'racing_car'],
+              priority: 4
+            })
+          }).catch(() => {});
+        } catch (e) {}
+
+        // Sync to Google Sheets
+        if (GOOGLE_SHEETS_URL) {
+          try {
+            fetch(GOOGLE_SHEETS_URL, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify(updated)
+            }).catch(() => {});
+          } catch (e) {}
+        }
+
+        showToast(`Updated ${guestName}: ${newStatus.replace('_', ' ')}`);
+      }
+      fetchGuests();
+    }
+
+    function hostEditContact(code, guestName) {
+      let existing = null;
+      try {
+        const raw = localStorage.getItem('rsvp_' + code);
+        if (raw) existing = JSON.parse(raw);
+      } catch (e) {}
+
+      const parentName = prompt(`Enter parent name for ${guestName}:`, existing?.parentName || '');
+      if (parentName === null) return;
+      const parentPhone = prompt(`Enter parent phone number for ${guestName}:`, existing?.parentPhone || '');
+      if (parentPhone === null) return;
+
+      const updated = {
+        code: code,
+        status: existing?.status || 'attending_all',
+        parentName: parentName.trim(),
+        parentPhone: parentPhone.trim(),
+        dietary: existing?.dietary || '',
+        notes: existing?.notes || 'Updated by Host',
+        submittedAt: new Date().toISOString()
+      };
+      try {
+        localStorage.setItem('rsvp_' + code, JSON.stringify(updated));
+      } catch (e) {}
+
+      // Sync to Google Sheets
+      if (GOOGLE_SHEETS_URL) {
+        try {
+          fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(updated)
+          }).catch(() => {});
+        } catch (e) {}
+      }
+
+      showToast(`Saved contact for ${guestName}`);
+      fetchGuests();
+    }
+
+    function updateSheetsUI() {
+      const input = document.getElementById('googleSheetsUrlInput');
+      const pill = document.getElementById('sheetStatusPill');
+      if (input) input.value = GOOGLE_SHEETS_URL || '';
+      if (pill) {
+        if (GOOGLE_SHEETS_URL) {
+          pill.textContent = '🟢 Connected & Live';
+          pill.style.background = 'rgba(37, 211, 102, 0.2)';
+          pill.style.color = '#25D366';
+        } else {
+          pill.textContent = 'Not Connected';
+          pill.style.background = 'rgba(255, 255, 255, 0.08)';
+          pill.style.color = 'var(--text-tertiary)';
+        }
+      }
+    }
+
+    const saveSheetsBtn = document.getElementById('saveSheetsUrlBtn');
+    if (saveSheetsBtn) {
+      saveSheetsBtn.addEventListener('click', () => {
+        const input = document.getElementById('googleSheetsUrlInput');
+        const url = (input ? input.value : '').trim();
+        if (url) {
+          localStorage.setItem('eric_sheets_url', url);
+          GOOGLE_SHEETS_URL = url;
+          showToast('Connected to Google Sheet!');
+        } else {
+          localStorage.removeItem('eric_sheets_url');
+          GOOGLE_SHEETS_URL = '';
+          showToast('Google Sheet disconnected.');
+        }
+        updateSheetsUI();
+        fetchGuests();
+      });
+    }
+
+    function copyAttendingRoster() {
+      const attending = allGuests.filter(g => g.rsvp && (g.rsvp.status === 'attending_all' || g.rsvp.status === 'attending_no_sleepover'));
+      if (attending.length === 0) {
+        showToast('No guests marked attending yet.');
+        return;
+      }
+      let summary = `🏁 Eric's 11th Birthday Grand Prix - Attending Drivers (${attending.length}):\n\n`;
+      attending.forEach((g, idx) => {
+        const type = g.rsvp.status === 'attending_all' ? 'Full Bash + Sleepover' : 'Karting Only';
+        const contact = (g.rsvp.parentName || g.rsvp.parentPhone) ? ` - Parent: ${g.rsvp.parentName} (${g.rsvp.parentPhone})` : '';
+        summary += `${idx + 1}. ${g.name} [${type}]${contact}\n`;
+      });
+      copyToClipboard(summary);
+      showToast('Attending roster copied to clipboard!');
+    }
+
+    function exportGuestsJson() {
+      const backup = {};
+      allGuests.forEach(g => {
+        if (g.rsvp) backup[g.code] = g.rsvp;
+      });
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "eric_k1_party_rsvps.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Downloaded RSVP backup JSON!');
+    }
+
+    function importGuestsJson() {
+      const raw = prompt("Paste your RSVP JSON backup here:");
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        for (const [code, rsvp] of Object.entries(parsed)) {
+          localStorage.setItem('rsvp_' + code, JSON.stringify(rsvp));
+        }
+        showToast('RSVP backup imported successfully!');
+        fetchGuests();
+      } catch (e) {
+        alert("Invalid JSON format.");
+      }
     }
 
     function renderQuickGuestPills(guests) {
@@ -2423,6 +2730,7 @@
           return;
         }
       }
+      updateSheetsUI();
       fetchGuests();
       hostModal.classList.remove('hidden');
     }
@@ -2544,6 +2852,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       initCountdown();
+      updateSheetsUI();
       fetchGuests();
       const code = getQueryCode();
       if (code) {
