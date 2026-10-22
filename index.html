@@ -1867,25 +1867,41 @@
       if (!guestName) {
         guestName = verifyDynamicCode(code);
       }
-      if (!guestName && GOOGLE_SHEETS_URL) {
+
+      // Check local storage for existing RSVP
+      let savedRsvp = null;
+      try {
+        const raw = localStorage.getItem('rsvp_' + code);
+        if (raw) savedRsvp = JSON.parse(raw);
+      } catch (e) {}
+
+      // Always fetch latest RSVP & guest info from Google Sheets cloud master
+      if (GOOGLE_SHEETS_URL) {
         try {
           const sheetRes = await fetch(GOOGLE_SHEETS_URL);
           if (sheetRes.ok) {
             const sheetData = await sheetRes.json();
             if (sheetData && sheetData.rsvps && sheetData.rsvps[code]) {
-              guestName = sheetData.rsvps[code].driver || sheetData.rsvps[code].name;
+              const sheetRsvp = sheetData.rsvps[code];
+              if (sheetRsvp) {
+                // Merge cloud data (Google Sheet is authoritative)
+                savedRsvp = { ...(savedRsvp || {}), ...sheetRsvp };
+                try {
+                  localStorage.setItem('rsvp_' + code, JSON.stringify(savedRsvp));
+                } catch (e) {}
+              }
+              if (!guestName && (sheetRsvp.driver || sheetRsvp.name)) {
+                guestName = sheetRsvp.driver || sheetRsvp.name;
+              }
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          console.warn('Google Sheets fetch notice:', e);
+        }
       }
 
       if (guestName) {
         currentCode = code;
-        let savedRsvp = null;
-        try {
-          const raw = localStorage.getItem('rsvp_' + code);
-          if (raw) savedRsvp = JSON.parse(raw);
-        } catch (e) {}
 
         currentGuest = {
           valid: true,
@@ -1921,29 +1937,34 @@
       url.searchParams.set('code', guestData.code);
       window.history.replaceState({}, '', url);
 
-      // Populate existing RSVP if available
+      // Populate existing RSVP if available (Pre-loads all previous data)
       if (guestData.rsvp) {
         const r = guestData.rsvp;
-        const banner = document.getElementById('rsvpConfirmedBanner');
-        banner.classList.remove('hidden');
 
-        let statusText = "Attending the full event & sleepover!";
-        if (r.status === 'attending_no_sleepover') statusText = "Attending karting & dinner (pickup 9 PM Friday).";
-        if (r.status === 'declined') statusText = "Declined with regrets.";
-
-        document.getElementById('rsvpSummaryText').textContent = `Confirmed for ${name}: ${statusText}`;
-        
-        const radio = document.querySelector(`input[name="attendanceStatus"][value="${r.status}"]`);
-        if (radio) {
-          radio.checked = true;
-          updateSegmentHighlights();
-        }
-
+        // Preload parent name, contact number, dietary, notes
         if (r.parentName) document.getElementById('parentNameInput').value = r.parentName;
         if (r.parentPhone) document.getElementById('parentPhoneInput').value = r.parentPhone;
         if (r.dietary) document.getElementById('dietaryInput').value = r.dietary;
         if (r.notes) document.getElementById('notesInput').value = r.notes;
-        document.getElementById('submitRsvpBtn').innerHTML = '<span>🔄</span> Update RSVP';
+
+        if (r.status && r.status !== 'pending') {
+          const banner = document.getElementById('rsvpConfirmedBanner');
+          banner.classList.remove('hidden');
+
+          let statusText = "Attending the full event & sleepover!";
+          if (r.status === 'attending_no_sleepover') statusText = "Attending karting & dinner (pickup 9 PM Friday).";
+          if (r.status === 'declined') statusText = "Declined with regrets.";
+
+          document.getElementById('rsvpSummaryText').textContent = `Confirmed for ${name}: ${statusText}`;
+          
+          const radio = document.querySelector(`input[name="attendanceStatus"][value="${r.status}"]`);
+          if (radio) {
+            radio.checked = true;
+            updateSegmentHighlights();
+          }
+
+          document.getElementById('submitRsvpBtn').innerHTML = '<span>🔄</span> Update RSVP';
+        }
       }
 
       if (typeof confetti === 'function') {
