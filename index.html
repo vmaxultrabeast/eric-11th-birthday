@@ -1629,10 +1629,13 @@
                   All RSVPs save permanently to your Google Sheet in real time. Never expires.
                 </div>
               </div>
-              <div style="display: flex; gap: 8px; flex: 1; min-width: 280px; justify-content: flex-end;">
-                <input type="text" id="googleSheetsUrlInput" class="apple-input" placeholder="Paste Google Apps Script Web App URL..." style="font-size: 0.76rem; padding: 6px 10px;">
+              <div style="display: flex; gap: 8px; flex: 1; min-width: 280px; justify-content: flex-end; flex-wrap: wrap;">
+                <input type="text" id="googleSheetsUrlInput" class="apple-input" placeholder="Paste Google Apps Script Web App URL..." style="font-size: 0.76rem; padding: 6px 10px; min-width: 200px;">
                 <button class="pill-btn primary" id="saveSheetsUrlBtn" style="font-size: 0.75rem; white-space: nowrap; padding: 6px 14px; background: #25D366; color: #000; border: none; font-weight: 700;">
                   Connect Sheet
+                </button>
+                <button class="pill-btn" id="seedSheetBtn" onclick="seedAllGuestsToSheet()" style="font-size: 0.75rem; white-space: nowrap; padding: 6px 14px; background: rgba(37, 211, 102, 0.2); color: #25D366 !important; border-color: rgba(37, 211, 102, 0.4); font-weight: 700;">
+                  <span>🚀</span> Upload All 16 Guests to Sheet
                 </button>
               </div>
             </div>
@@ -1863,6 +1866,17 @@
       }
       if (!guestName) {
         guestName = verifyDynamicCode(code);
+      }
+      if (!guestName && GOOGLE_SHEETS_URL) {
+        try {
+          const sheetRes = await fetch(GOOGLE_SHEETS_URL);
+          if (sheetRes.ok) {
+            const sheetData = await sheetRes.json();
+            if (sheetData && sheetData.rsvps && sheetData.rsvps[code]) {
+              guestName = sheetData.rsvps[code].driver || sheetData.rsvps[code].name;
+            }
+          }
+        } catch (e) {}
       }
 
       if (guestName) {
@@ -2249,6 +2263,9 @@
             if (sheetData && sheetData.rsvps) {
               for (const [code, rsvp] of Object.entries(sheetData.rsvps)) {
                 cloudRsvps[code] = rsvp;
+                if (rsvp.driver) {
+                  cloudGuests[code] = rsvp.driver;
+                }
                 try {
                   localStorage.setItem('rsvp_' + code, JSON.stringify(rsvp));
                 } catch (e) {}
@@ -2279,7 +2296,7 @@
 
         staticList.push({
           code: c,
-          name: n,
+          name: (cloudGuests[c] || n),
           rsvp: savedRsvp
         });
       }
@@ -2569,6 +2586,73 @@
       }
     }
 
+    async function seedAllGuestsToSheet() {
+      if (!GOOGLE_SHEETS_URL) {
+        alert("Please connect your Google Sheet first.");
+        return;
+      }
+      const btn = document.getElementById('seedSheetBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Uploading...';
+      }
+      showToast('Populating all guests into your Google Sheet...');
+
+      const initialRoster = [
+        { code: 'K1-TIM72X', driver: 'Tim', status: 'pending' },
+        { code: 'K1-AARY94', driver: 'Aarys', status: 'pending' },
+        { code: 'K1-AARONECA', driver: 'Aaron', status: 'pending' },
+        { code: 'K1-LEO31M', driver: 'Leo', status: 'attending_all', parentName: 'Nargues Eder', parentPhone: '6507735623' },
+        { code: 'K1-LEON85', driver: 'Leonid', status: 'pending' },
+        { code: 'K1-OMAR46', driver: 'Omar', status: 'pending' },
+        { code: 'K1-AITO63', driver: 'Aitor', status: 'pending' },
+        { code: 'K1-ALEN29', driver: 'Alen', status: 'pending' },
+        { code: 'K1-ALLEN671', driver: 'Allen', status: 'pending' },
+        { code: 'K1-OSKA71', driver: 'Oskar', status: 'pending' },
+        { code: 'K1-MALT58', driver: 'Malte', status: 'pending' },
+        { code: 'K1-JUST83', driver: 'Justus', status: 'pending' },
+        { code: 'K1-EVEN17', driver: 'Even', status: 'pending' },
+        { code: 'K1-EVANFA7', driver: 'Evan', status: 'pending' },
+        { code: 'K1-PHIL64', driver: 'Philipp', status: 'pending' },
+        { code: 'K1-SARA52', driver: 'Sarah', status: 'pending' }
+      ];
+
+      for (let i = 0; i < initialRoster.length; i++) {
+        const item = initialRoster[i];
+        try {
+          const raw = localStorage.getItem('rsvp_' + item.code);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.status) item.status = parsed.status;
+            if (parsed.parentName) item.parentName = parsed.parentName;
+            if (parsed.parentPhone) item.parentPhone = parsed.parentPhone;
+          }
+        } catch (e) {}
+
+        item.submittedAt = item.submittedAt || new Date().toISOString();
+
+        try {
+          await fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(item)
+          });
+        } catch (e) {}
+        await new Promise(r => setTimeout(r, 350));
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>✅</span> All Guests Synced!';
+        setTimeout(() => {
+          btn.innerHTML = '<span>🚀</span> Upload All 16 Guests to Sheet';
+        }, 3000);
+      }
+      showToast('All 16 guests successfully uploaded to Google Sheet!');
+      fetchGuests();
+    }
+
     function renderQuickGuestPills(guests) {
       const container = document.getElementById('quickGuestButtons');
       container.innerHTML = '';
@@ -2711,6 +2795,27 @@
           })
         }).catch(() => {});
       } catch (e) {}
+
+      // 4. Write new guest directly to Google Sheets (Permanent Cloud Master!)
+      if (GOOGLE_SHEETS_URL) {
+        try {
+          fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              code: newCode,
+              driver: name,
+              status: 'pending',
+              parentName: '',
+              parentPhone: '',
+              dietary: '',
+              notes: '',
+              submittedAt: new Date().toISOString()
+            })
+          }).catch(() => {});
+        } catch (e) {}
+      }
 
       nameInput.value = '';
       showToast(`🎉 Added ${name}! Unique code: ${newCode}`);
